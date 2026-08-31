@@ -1,23 +1,16 @@
 {
-  "name": "inalper-photography",
-  "version": "0.1.0",
+  "name": "iperezphoto",
+  "type": "module",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
-    "animejs": "^3.2.2",
-    "next": "14.2.35",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "astro": "^6.4.7",
+    "animejs": "^4.4.1"
   }
 }

@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# IPEREZPHOTO — Inaldo Pérez
 
-## Getting Started
+Sitio de fotografía deportiva. Astro 6 (SSG) + Anime.js v4 + vanilla JS. Dark/técnico premium.
 
-First, run the development server:
-
+## Comandos
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # genera /dist
+npm run preview  # sirve /dist
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy — Cloudflare Pages
+- Build command: `npm run build`
+- Output directory: `dist`
+- Framework preset: Astro
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Secciones
+Hero (foto fullscreen + entrada Anime.js) · Nav (transparente→blur, scrollspy,
+drawer mobile) · Galería (masonry CSS columns, 16 categorías, filtro, lightbox)
+· Sobre Mí · Prensa (doble marquee + eventos) · Contacto · Footer.
+Cursor personalizado (desktop) + WhatsApp flotante.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Fotos de galería
+Escanea `public/photos/[categoria]/` en build time. Sin fotos reales muestra
+30 placeholders ("PRÓXIMAMENTE", proporciones mixtas). Al dejar imágenes
+(`.jpg/.png/.webp/.avif`) en las carpetas, aparecen automáticamente.
 
-## Learn More
+Categorías: rugby, atletismo, natacion, taekwondo, gimnasia, surf, ciclismo,
+boxeo, basketball, patinaje, futbol, halterofilia, juegos-mundiales, eventos,
+paisajes, naturaleza.
 
-To learn more about Next.js, take a look at the following resources:
+## Assets pendientes (los provee Inaldo)
+- `public/IPEREZLOGO.png` — logo. Sin él, el nav usa wordmark de texto; favicon 404.
+- `public/hero.jpg` — foto hero fullscreen. Sin ella, fondo oscuro con textura.
+- `public/inaldo-portrait.jpg` — retrato sección Sobre Mí.
+- `public/logos/*.png` — logos de prensa (blanco). Sin ellos, marquee usa texto.
+- Reemplazar email, Instagram y WhatsApp `+57XXXXXXXXXX` en `Layout.astro`,
+  `Contact.astro`, `Hero.astro`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notas técnicas
+- Tailwind se omitió: `@tailwindcss/vite` v4 choca con el rolldown-vite de
+  Astro 6 (`Missing field tsconfigPaths`). El sistema de diseño es 100% CSS
+  nativo con custom properties en `src/styles/global.css` — mismo resultado.
+- `postcss.config.cjs` vacío evita que PostCSS herede config del proyecto padre.
+- Anime.js v4 (named exports `animate`, `stagger`): hero, reveal, filtro,
+  lightbox. Resto de interacciones en vanilla JS.
+- Cero `border-radius`. Único acento: Canon red `#cc0000`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Hecho con amor por JuanCode.
