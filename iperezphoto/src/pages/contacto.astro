@@ -1,9 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import {
+  EMAIL, MAIL_LINK, INSTAGRAM, INSTAGRAM_URL, PHONE_DISPLAY, WA_LINK,
+} from '../lib/contact.js';
+
 const blocks = [
-  { tag: 'Correo', value: 'contacto@iperezphoto.com', href: 'mailto:contacto@iperezphoto.com' },
-  { tag: 'Instagram', value: '@iperezphoto', href: 'https://instagram.com/iperezphoto' },
-  { tag: 'WhatsApp', value: '+57 XXX XXX XXXX', href: 'https://wa.me/57XXXXXXXXXX' },
+  { tag: 'Correo', value: EMAIL, href: MAIL_LINK },
+  { tag: 'Instagram', value: INSTAGRAM, href: INSTAGRAM_URL },
+  { tag: 'WhatsApp', value: PHONE_DISPLAY, href: WA_LINK },
 ];
 ---
 
