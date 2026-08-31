@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { posts } from '../../lib/posts.js';
+
+export function getStaticPaths() {
+  // Empty until content is connected (Cloudflare R2 / CMS).
+  return posts.map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+---
+
+<Layout title={`${post.title} — IPEREZPHOTO`} description={post.title} active="blog">
+  <article id="post">
+    <header class="post-hero">
+      <p class="eyebrow">// {post.category}</p>
+      <h1 class="h-display">{post.title}</h1>
+      {post.cover && <img class="post-cover" src={post.cover} alt={post.title} />}
+    </header>
+
+    <div class="post-layout">
+      <aside class="post-side mono">
+        <span>{post.category}</span>
+        <span>{post.date}</span>
+        <span>{post.readTime} lectura</span>
+      </aside>
+      <div class="post-body" set:html={post.body} />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  #post { padding-bottom: 120px; }
+  .post-hero { max-width: 1100px; margin: 0 auto; padding: 140px 40px 0; }
+  .post-hero h1 { font-size: clamp(40px, 7vw, 64px); margin-bottom: 32px; }
+  .post-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--surface); }
+
+  .post-layout { display: grid; grid-template-columns: 200px 1fr; gap: 48px; max-width: 1100px; margin: 56px auto 0; padding: 0 40px; }
+  .post-side { display: flex; flex-direction: column; gap: 10px; font-size: 10px; letter-spacing: 0.2em; color: #444; }
+  .post-body { max-width: 720px; font-size: 18px; font-weight: 300; line-height: 2; color: var(--secondary); }
+  .post-body :global(p) { margin: 0 0 28px; }
+  .post-body :global(h2) { font-family: var(--font-display); font-size: 32px; color: #fff; margin: 48px 0 18px; }
+
+  @media (max-width: 768px) {
+    .post-hero { padding: 120px 16px 0; }
+    .post-layout { grid-template-columns: 1fr; gap: 24px; padding: 0 16px; }
+  }
+</style>

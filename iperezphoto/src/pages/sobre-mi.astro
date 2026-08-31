@@ -1,0 +1,111 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', 'inaldo-portrait.jpg'));
+
+const media = ['AFP', 'El Tiempo', 'Caracol TV', 'RCN', 'El Heraldo', 'Juegos Suramericanos', 'World Games', 'COC'];
+const row1 = [...media, ...media];
+const row2 = [...media].reverse();
+const row2x = [...row2, ...row2];
+
+const events = [
+  { title: 'JUEGOS SURAMERICANOS', desc: 'Cobertura oficial de competencias continentales en múltiples disciplinas.' },
+  { title: 'WORLD GAMES — CALI 2013', desc: 'Registro de los Juegos Mundiales de deportes no olímpicos.' },
+  { title: 'COBERTURA NACIONAL', desc: 'Rugby, atletismo, surf, boxeo, gimnasia y más de 15 disciplinas.' },
+];
+---
+
+<Layout title="Inaldo Pérez — IPEREZPHOTO" active="sobre-mi">
+  <main id="sobre">
+    <div class="page-head reveal-group">
+      <p class="eyebrow reveal">// Sobre Mí</p>
+      <h1 class="h-display reveal">INALDO PÉREZ</h1>
+    </div>
+
+    <section class="bio">
+      <div class="bio-photo reveal">
+        <span class="bio-rule"></span>
+        {hasPortrait ? (
+          <img src="/inaldo-portrait.jpg" alt="Inaldo Pérez" loading="lazy" />
+        ) : (
+          <div class="bio-ph"><span class="mono">Retrato</span></div>
+        )}
+      </div>
+      <div class="bio-text reveal-group">
+        <p class="reveal">Fotógrafo deportivo con más de una década capturando los momentos más intensos del deporte colombiano e internacional. Especializado en fotografía de acción, su trabajo ha sido publicado por las principales agencias y medios del país.</p>
+        <p class="reveal">Desde los Juegos Suramericanos hasta el World Games, su lente ha documentado más de 15 disciplinas deportivas con una mirada que combina precisión técnica y narrativa visual.</p>
+
+        <div class="stats reveal">
+          <div class="stat"><span class="stat-n">15+</span><span class="stat-l mono">Disciplinas</span></div>
+          <div class="stat"><span class="stat-n">10+</span><span class="stat-l mono">Años activo</span></div>
+          <div class="stat"><span class="stat-n stat-sm">Internacional</span><span class="stat-l mono">AFP · El Tiempo · RCN</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="press">
+      <div class="press-head reveal-group">
+        <p class="eyebrow reveal">// Publicado En</p>
+        <h2 class="h-display reveal" style="font-size:clamp(36px,6vw,48px)">PROFESSIONAL RELATIONSHIPS</h2>
+      </div>
+
+      <div class="marquee"><div class="mtrack left">{row1.map((m) => <span class="logo">{m}</span>)}</div></div>
+      <div class="marquee"><div class="mtrack right">{row2x.map((m) => <span class="logo">{m}</span>)}</div></div>
+
+      <div class="events">
+        {events.map((e) => (
+          <div class="event reveal">
+            <p class="event-tag mono">Evento Destacado</p>
+            <h3 class="event-title">{e.title}</h3>
+            <p class="event-desc">{e.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  #sobre { padding-bottom: 120px; }
+  .bio { display: grid; grid-template-columns: 40% 60%; gap: 72px; align-items: start; max-width: 1280px; margin: 0 auto; padding: 24px 40px 96px; }
+  .bio-photo { position: relative; }
+  .bio-rule { position: absolute; top: -2px; left: -2px; width: 2px; height: 80px; background: var(--accent); z-index: 2; }
+  .bio-photo img, .bio-ph { width: 100%; aspect-ratio: 3/4; object-fit: cover; background: var(--surface); }
+  .bio-ph { display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+  .bio-ph span { font-size: 10px; color: #333; }
+  .bio-text p { font-size: 16px; font-weight: 300; line-height: 1.9; color: var(--secondary); margin: 0 0 22px; max-width: 60ch; }
+
+  .stats { display: flex; align-items: center; gap: 32px; margin-top: 40px; }
+  .stat { display: flex; flex-direction: column; gap: 8px; padding-right: 32px; border-right: 1px solid #1a1a1a; }
+  .stat:last-child { border-right: none; padding-right: 0; }
+  .stat-n { font-family: var(--font-display); font-size: 56px; line-height: 1; color: #fff; }
+  .stat-sm { font-size: 32px; }
+  .stat-l { font-size: 9px; color: #444; }
+
+  .press { border-top: 1px solid var(--surface); padding-top: 96px; overflow: hidden; }
+  .press-head { padding: 0 40px; margin-bottom: 48px; max-width: 1280px; margin-left: auto; margin-right: auto; }
+  .marquee { width: 100%; overflow: hidden; padding: 12px 0; }
+  .marquee:hover .mtrack { animation-play-state: paused; }
+  .mtrack { display: flex; width: max-content; will-change: transform; }
+  .mtrack.left { animation: mL 25s linear infinite; }
+  .mtrack.right { animation: mR 30s linear infinite; }
+  .logo { flex: 0 0 auto; padding: 0 56px; font-family: var(--font-mono); font-size: 14px; text-transform: uppercase; letter-spacing: 0.15em; color: #252525; white-space: nowrap; transition: color 0.3s ease; }
+  .logo:hover { color: #444; }
+  @keyframes mL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes mR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+  .events { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1280px; margin: 64px auto 0; padding: 0 40px; }
+  .event { border-left: 2px solid var(--accent); background: var(--deep); padding: 24px 32px; }
+  .event-tag { font-size: 9px; color: var(--accent); margin: 0 0 10px; }
+  .event-title { font-family: var(--font-display); font-size: 24px; font-weight: 400; letter-spacing: 0.03em; color: #fff; margin: 0 0 8px; }
+  .event-desc { font-size: 13px; font-weight: 300; line-height: 1.6; color: var(--muted); margin: 0; }
+
+  @media (max-width: 768px) {
+    .bio { grid-template-columns: 1fr; gap: 36px; padding: 16px 16px 72px; }
+    .stats { flex-wrap: wrap; gap: 20px; }
+    .press-head { padding: 0 16px; }
+    .mtrack.left, .mtrack.right { animation-duration: 40s; }
+    .events { grid-template-columns: 1fr; padding: 0 16px; }
+  }
+</style>

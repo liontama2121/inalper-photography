@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+const blocks = [
+  { tag: 'Correo', value: 'contacto@iperezphoto.com', href: 'mailto:contacto@iperezphoto.com' },
+  { tag: 'Instagram', value: '@iperezphoto', href: 'https://instagram.com/iperezphoto' },
+  { tag: 'WhatsApp', value: '+57 XXX XXX XXXX', href: 'https://wa.me/57XXXXXXXXXX' },
+];
+---
+
+<Layout title="Contacto — IPEREZPHOTO" active="contacto">
+  <main id="contacto">
+    <div class="page-head reveal-group" style="text-align:center">
+      <p class="eyebrow reveal" style="display:inline-block">// Contacto</p>
+      <h1 class="h-display reveal">TRABAJEMOS JUNTOS</h1>
+      <p class="sub reveal">Disponible para asignaciones deportivas, eventos y proyectos editoriales.</p>
+    </div>
+
+    <section class="c-grid reveal-group">
+      {blocks.map((b) => (
+        <a class="c-cell reveal" href={b.href} target="_blank" rel="noopener">
+          <span class="c-tag mono">{b.tag}</span>
+          <span class="c-val">{b.value}</span>
+        </a>
+      ))}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  #contacto { min-height: 70vh; padding-bottom: 120px; }
+  .sub { font-size: 16px; font-weight: 300; color: var(--muted); margin: 18px 0 0; }
+  .c-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; max-width: 1080px; margin: 48px auto 0; padding: 0 40px; }
+  .c-cell { display: flex; flex-direction: column; gap: 12px; padding: 56px 48px; border: 1px solid var(--border); transition: border-color 0.3s ease; }
+  .c-cell:hover { border-color: var(--accent); }
+  .c-tag { font-size: 9px; letter-spacing: 0.25em; color: #333; }
+  .c-val { font-size: 15px; font-weight: 300; color: #fff; transition: color 0.25s ease; }
+  .c-cell:hover .c-val { color: var(--accent); }
+  @media (max-width: 768px) {
+    .c-grid { grid-template-columns: 1fr; padding: 0 16px; }
+    .c-cell { padding: 36px 28px; }
+  }
+</style>

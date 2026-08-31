@@ -1,0 +1,23 @@
+<footer id="footer">
+  <span class="mono">© 2025 IPEREZPHOTO — Todos los derechos reservados</span>
+  <span class="mono">Hecho con amor por JuanCode</span>
+</footer>
+
+<style>
+  #footer {
+    background: var(--void);
+    border-top: 1px solid #1a1a1a;
+    padding: 28px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  #footer span { font-size: 9px; letter-spacing: 0.2em; color: #2a2a2a; }
+  #footer span:last-child { text-align: right; }
+  @media (max-width: 768px) {
+    #footer { flex-direction: column; text-align: center; padding: 24px 16px; }
+    #footer span:last-child { text-align: center; }
+  }
+</style>

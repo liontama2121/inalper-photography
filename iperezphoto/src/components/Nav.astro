@@ -1,0 +1,136 @@
+---
+const { active = '', transparent = false } = Astro.props;
+const links = [
+  { label: 'Portafolio', href: '/portafolio', key: 'portafolio' },
+  { label: 'Sobre Mí', href: '/sobre-mi', key: 'sobre-mi' },
+  { label: 'Blog', href: '/blog', key: 'blog' },
+  { label: 'Contacto', href: '/contacto', key: 'contacto' },
+];
+---
+
+<nav id="nav" class={transparent ? '' : 'solid'} data-transparent={transparent ? '1' : '0'} aria-label="Principal">
+  <a id="nav-logo" href="/" aria-label="Inicio">
+    <img src="/IPEREZLOGO.png" alt="IPEREZPHOTO" height="26"
+      onerror="this.replaceWith(document.getElementById('nav-wm').content.cloneNode(true))" />
+    <template id="nav-wm"><span class="nav-wm mono">IPEREZ<i>PHOTO</i></span></template>
+  </a>
+
+  <ul id="nav-links">
+    {links.map((l) => (
+      <li><a href={l.href} class={`mono${active === l.key ? ' active' : ''}`}>{l.label}</a></li>
+    ))}
+  </ul>
+
+  <button id="nav-burger" aria-label="Menú" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="nav-drawer" aria-hidden="true">
+  <button id="drawer-close" aria-label="Cerrar">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="1.2"><path d="M5 5l14 14M19 5L5 19" /></svg>
+  </button>
+  <ul>
+    {links.map((l) => (<li><a href={l.href} class={active === l.key ? 'active' : ''}>{l.label}</a></li>))}
+  </ul>
+</div>
+
+<style>
+  #nav {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: var(--nav-h);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
+  }
+  #nav.solid, #nav.scrolled {
+    background: rgba(8, 8, 8, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom-color: #1a1a1a;
+  }
+  #nav-logo img { height: 26px; object-fit: contain; }
+  .nav-wm { font-size: 14px; font-weight: 500; letter-spacing: 0.25em; color: #fff; }
+  .nav-wm i { color: var(--secondary); font-style: normal; }
+
+  #nav-links { display: flex; gap: 32px; list-style: none; margin: 0; padding: 0; }
+  #nav-links a {
+    position: relative;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #555;
+    padding-bottom: 6px;
+    transition: color 0.2s ease;
+  }
+  #nav-links a:hover, #nav-links a.active { color: #fff; }
+  #nav-links a.active::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: var(--accent);
+  }
+
+  #nav-burger { display: none; flex-direction: column; gap: 5px; width: 20px; background: none; border: none; cursor: pointer; padding: 0; }
+  #nav-burger span { display: block; width: 100%; height: 1px; background: #fff; transition: transform 0.3s, opacity 0.3s; }
+  #nav-burger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  #nav-burger.open span:nth-child(2) { opacity: 0; }
+  #nav-burger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  #nav-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: var(--void);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.1, 1);
+  }
+  #nav-drawer.open { transform: translateX(0); }
+  #drawer-close { position: absolute; top: 18px; right: 36px; background: none; border: none; cursor: pointer; }
+  #nav-drawer ul { list-style: none; margin: 0; padding: 0; text-align: center; }
+  #nav-drawer li { margin: 8px 0; }
+  #nav-drawer a { font-family: var(--font-display); font-size: 48px; letter-spacing: 0.04em; color: var(--secondary); transition: color 0.2s ease; }
+  #nav-drawer a:hover, #nav-drawer a.active { color: #fff; }
+
+  @media (max-width: 768px) {
+    #nav { padding: 0 24px; }
+    #nav-links { display: none; }
+    #nav-burger { display: flex; }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('nav');
+  const burger = document.getElementById('nav-burger');
+  const drawer = document.getElementById('nav-drawer');
+  const closeBtn = document.getElementById('drawer-close');
+
+  // Only index uses transparent->solid on scroll
+  if (nav?.dataset.transparent === '1') {
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 80);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  const setDrawer = (open: boolean) => {
+    burger?.classList.toggle('open', open);
+    drawer?.classList.toggle('open', open);
+    burger?.setAttribute('aria-expanded', String(open));
+    drawer?.setAttribute('aria-hidden', String(!open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  burger?.addEventListener('click', () => setDrawer(!burger.classList.contains('open')));
+  closeBtn?.addEventListener('click', () => setDrawer(false));
+  drawer?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+</script>
