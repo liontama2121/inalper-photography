@@ -4,8 +4,10 @@
 export const PHONE_DISPLAY = '+1 (661) 349-1404';
 export const PHONE_E164 = '16613491404'; // wa.me wants digits only, no + or spaces
 export const EMAIL = 'inalpecas@gmail.com';
-export const INSTAGRAM = '@iperezphoto';
-export const INSTAGRAM_URL = 'https://instagram.com/iperezphoto';
+export const INSTAGRAM = '@inalper';
+// Clean profile URL — the share-sheet link carries utm_source/igsi tracking
+// params that only make sense for the one share they came from.
+export const INSTAGRAM_URL = 'https://www.instagram.com/inalper';
 
 // Prefilled first message. English on purpose: most inbound leads that
 // reach the site are international, so the opening line reads for them.
