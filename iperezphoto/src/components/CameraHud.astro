@@ -93,7 +93,7 @@
     </h1>
     <div id="h-sep"></div>
     <p id="h-media">AFP · El Tiempo · Caracol TV · RCN · El Heraldo</p>
-    <a id="h-cta" class="mono" href="/portafolio">Ver Portafolio →</a>
+    <a id="h-cta" class="mono" href="/portafolio">View Portfolio →</a>
   </div>
 
   <div id="hero-scroll">
@@ -103,7 +103,8 @@
 </section>
 
 <style>
-  #hero { position: relative; height: 100vh; min-height: 600px; background: var(--void); overflow: hidden; }
+  /* svh so the mobile URL bar can't push the hero taller than the screen */
+  #hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; background: var(--void); overflow: hidden; }
   #hud-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0; }
 
   #hud-data {
@@ -117,12 +118,22 @@
   .hud.bl { bottom: 80px; left: 80px; }
   .hud.br { bottom: 80px; right: 80px; text-align: right; align-items: flex-end; }
 
-  #hero-text { position: absolute; left: 80px; bottom: 80px; z-index: 3; max-width: 90%; }
-  #h-eyebrow { font-size: 10px; letter-spacing: 0.3em; color: var(--accent); margin: 0 0 22px; opacity: 0; }
-  .h-name { font-family: var(--font-display); font-size: 96px; font-weight: 400; line-height: 0.88; letter-spacing: 0.02em; color: #fff; margin: 0; }
+  /* Centered over the lens. Container is click-through so it never eats
+     HUD area; only the CTA takes pointer events. */
+  #hero-text {
+    position: absolute; inset: 0; z-index: 3;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 0 24px; pointer-events: none;
+  }
+  #h-eyebrow { font-size: 10px; letter-spacing: 0.3em; color: var(--accent); margin: 0 0 26px; opacity: 0; }
+  /* Fluid size: never smaller than legible, never wider than the viewport. */
+  .h-name {
+    font-family: var(--font-display); font-size: clamp(64px, 13.5vw, 210px);
+    font-weight: 400; line-height: 0.85; letter-spacing: 0.02em; color: #fff; margin: 0;
+  }
   .h-name .hline { display: block; opacity: 0; }
-  #h-sep { width: 56px; height: 1px; background: var(--accent); margin: 20px 0; transform: scaleX(0); transform-origin: left; }
-  #h-media { font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.45); margin: 0 0 30px; opacity: 0; }
+  #h-sep { width: 56px; height: 1px; background: var(--accent); margin: 26px auto; transform: scaleX(0); transform-origin: center; }
+  #h-media { font-size: clamp(12px, 1.5vw, 15px); font-weight: 300; color: rgba(255,255,255,0.45); margin: 0 0 34px; opacity: 0; }
   #h-cta { display: inline-block; font-size: 11px; letter-spacing: 0.12em; color: #fff; border: 1px solid #fff; padding: 13px 32px; opacity: 0; transition: background 0.25s ease, color 0.25s ease; pointer-events: auto; }
   #h-cta:hover { background: #fff; color: var(--void); }
 
@@ -135,11 +146,22 @@
   #hero::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 160px; background: linear-gradient(to bottom, transparent, var(--void)); z-index: 2; pointer-events: none; }
 
   @media (max-width: 768px) {
-    #hero-text { left: 40px; bottom: 56px; }
-    .h-name { font-size: 56px; }
+    #hero-text { padding: 0 20px; }
+    /* 16vw keeps PÉREZ edge-to-edge without overflowing narrow phones */
+    .h-name { font-size: clamp(58px, 16vw, 96px); }
+    #h-eyebrow { font-size: 9px; letter-spacing: 0.22em; margin: 0 0 20px; }
+    #h-sep { margin: 20px auto; }
+    #h-media { margin: 0 0 28px; line-height: 1.6; }
+    #h-cta { padding: 14px 30px; }
     .hud.tl, .hud.bl, .hud.br { display: none; } /* keep only exposure top-right */
-    .hud.tr { top: 76px; right: 24px; }
-    #hero-scroll { right: 20px; }
+    .hud.tr { top: 76px; right: 20px; }
+    #hero-scroll { right: 16px; bottom: 24px; }
+  }
+
+  /* very narrow phones — drop the scroll cue so it can't crowd the CTA */
+  @media (max-width: 380px) {
+    .h-name { font-size: 52px; }
+    #hero-scroll { display: none; }
   }
 </style>
 
@@ -295,8 +317,8 @@
   } else {
     animate('#hud-svg', { opacity: [0, 1], duration: 2000, ease: E });
     animate('#h-eyebrow', { translateY: [-8, 0], opacity: [0, 1], delay: 400, duration: 600, ease: E });
-    animate('#h-l1', { translateX: [-16, 0], opacity: [0, 1], delay: 600, duration: 600, ease: E });
-    animate('#h-l2', { translateX: [-16, 0], opacity: [0, 1], delay: 750, duration: 600, ease: E });
+    animate('#h-l1', { translateY: [22, 0], opacity: [0, 1], delay: 600, duration: 700, ease: E });
+    animate('#h-l2', { translateY: [22, 0], opacity: [0, 1], delay: 750, duration: 700, ease: E });
     animate('#h-sep', { scaleX: [0, 1], delay: 900, duration: 500, ease: E });
     animate('#h-media', { opacity: [0, 1], delay: 1100, duration: 600, ease: E });
     animate('#h-cta', { translateY: [8, 0], opacity: [0, 1], delay: 1300, duration: 600, ease: E });
