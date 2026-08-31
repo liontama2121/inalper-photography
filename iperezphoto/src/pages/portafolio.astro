@@ -92,21 +92,21 @@ const totalPhotos = photos.length;
   #portafolio { padding-bottom: 100px; }
 
   /* ===== Category nav ===== */
+  /* Wraps instead of scrolling: with 18 categories a single strip ran wider
+     than the viewport and the overflow was invisible (no scrollbar shown). */
   #cat-nav {
     margin: 40px 0 32px;
     border-bottom: 1px solid #1a1a1a;
-    padding-bottom: 0;
-    overflow-x: auto;
+    padding: 0 40px;
   }
-  #cat-nav { scrollbar-width: none; }
-  #cat-nav::-webkit-scrollbar { display: none; }
 
   #cat-list {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0;
-    width: max-content;
-    min-width: 100%;
-    padding: 0 40px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .cat-btn {
@@ -145,9 +145,15 @@ const totalPhotos = photos.length;
   @media (max-width: 1024px) { #gal-grid { column-count: 2; } }
   @media (max-width: 768px) {
     .page-head { padding-top: 120px; }
-    #cat-list { padding: 0 16px; }
+    #cat-nav { padding: 0 10px; }
+    /* tighter cells so every category fits on screen; 40px min touch height */
+    .cat-btn { padding: 12px 11px; font-size: 9px; letter-spacing: 0.1em; }
     #gal { padding: 16px 16px 0; }
     #gal-grid { column-count: 1; column-gap: 2px; }
+  }
+
+  @media (max-width: 420px) {
+    .cat-btn { padding: 11px 9px; letter-spacing: 0.06em; }
   }
 
   /* ===== Lightbox ===== */
