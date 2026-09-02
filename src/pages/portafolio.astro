@@ -44,6 +44,10 @@ const photos = scanned.flatMap((s) =>
   s.files.map((f) => ({ cat: s.cat, label: prettify(s.cat), src: `/photos/${s.cat}/${encodeURIComponent(f)}` }))
 );
 const totalPhotos = photos.length;
+
+// Only this many <img src> ship in the HTML; the rest carry data-src and are
+// wired up by the "load more" button. 574 photos at once made the page crawl.
+const BATCH = 12;
 ---
 
 <Layout title="Portafolio — IPEREZPHOTO" active="portafolio">
@@ -65,15 +69,25 @@ const totalPhotos = photos.length;
     <!-- ===== Masonry gallery ===== -->
     <section id="gal">
       <div id="gal-grid">
-        {photos.map((p) => (
-          <figure class="photo-item" data-cat={p.cat}>
-            <img src={p.src} alt={`${p.label} — Inaldo Pérez`} loading="lazy" decoding="async" />
+        {photos.map((p, i) => (
+          <figure class={`photo-item${i < BATCH ? '' : ' pending'}`} data-cat={p.cat}>
+            <img
+              src={i < BATCH ? p.src : undefined}
+              data-src={p.src}
+              alt={`${p.label} — Inaldo Pérez`}
+              loading="lazy"
+              decoding="async"
+            />
             <div class="photo-ov">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1"><path d="M12 5v14M5 12h14" /></svg>
               <span class="photo-cat mono" data-label={p.label}>{p.label}</span>
             </div>
           </figure>
         ))}
+      </div>
+
+      <div id="gal-more">
+        <button id="load-more" class="mono">Cargar más <span id="more-count"></span></button>
       </div>
     </section>
   </main>
@@ -141,6 +155,20 @@ const totalPhotos = photos.length;
   .photo-item:hover .photo-ov { background: rgba(8,8,8,0.65); }
   .photo-item:hover .photo-ov svg, .photo-item:hover .photo-cat { opacity: 1; }
   .photo-item.hide { display: none; }
+  /* not yet requested — the img has no src until "load more" assigns it */
+  .photo-item.pending { display: none; }
+
+  #gal-more { display: flex; justify-content: center; padding: 48px 40px 0; }
+  #load-more {
+    background: none; border: 1px solid var(--border); color: #fff;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 16px 40px; cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  #load-more:hover { background: #fff; color: var(--void); border-color: #fff; }
+  #load-more[hidden] { display: none; }
+  #more-count { color: #555; margin-left: 6px; }
+  #load-more:hover #more-count { color: var(--void); }
 
   @media (max-width: 1024px) { #gal-grid { column-count: 2; } }
   @media (max-width: 768px) {
@@ -175,15 +203,57 @@ const totalPhotos = photos.length;
   import { animate } from 'animejs';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ===== Gallery filter =====
+  // ===== Batched loading =====
+  // Photos past the first batch ship without a src, so the browser never
+  // requests them until the visitor asks for more.
+  const BATCH = 12;
   const photos = Array.from(document.querySelectorAll<HTMLElement>('.photo-item'));
+  const moreBtn = document.getElementById('load-more') as HTMLButtonElement;
+  const moreCount = document.getElementById('more-count')!;
+  let currentCat = 'todas';
+
+  const inCat = (p: HTMLElement) => currentCat === 'todas' || p.dataset.cat === currentCat;
+  const isPending = (p: HTMLElement) => p.classList.contains('pending');
+
+  function updateMoreBtn() {
+    const left = photos.filter((p) => inCat(p) && isPending(p)).length;
+    moreBtn.hidden = left === 0;
+    moreCount.textContent = left > 0 ? `(${left})` : '';
+  }
+
+  // Assign src and drop .pending for the next n photos of the active category.
+  function revealMore(n: number) {
+    const batch = photos.filter((p) => inCat(p) && isPending(p)).slice(0, n);
+    batch.forEach((p) => {
+      const img = p.querySelector('img') as HTMLImageElement | null;
+      if (img && !img.getAttribute('src') && img.dataset.src) img.src = img.dataset.src;
+      p.classList.remove('pending');
+    });
+    if (!reduce && batch.length) {
+      animate(batch, {
+        opacity: [0, 1], scale: [0.96, 1], duration: 320,
+        delay: (_, i) => Math.min(i, 24) * 18, ease: 'outQuart',
+      });
+    }
+    updateMoreBtn();
+  }
+
+  moreBtn.addEventListener('click', () => revealMore(BATCH));
+
+  // ===== Gallery filter =====
   function filterGallery(cat: string) {
+    currentCat = cat;
     const hideItems: HTMLElement[] = [];
     const showItems: HTMLElement[] = [];
     photos.forEach((p) => {
-      const match = cat === 'todas' || p.dataset.cat === cat;
-      if (match) showItems.push(p); else hideItems.push(p);
+      // pending photos stay out of the animation — revealMore handles them
+      if (isPending(p)) return;
+      if (inCat(p)) showItems.push(p); else hideItems.push(p);
     });
+    // Always keep at least one batch on screen for the new category.
+    const deficit = BATCH - showItems.length;
+    if (deficit > 0) revealMore(deficit);
+    updateMoreBtn();
     if (reduce) {
       hideItems.forEach((p) => p.classList.add('hide'));
       showItems.forEach((p) => { p.classList.remove('hide'); p.style.opacity = '1'; });
@@ -217,7 +287,8 @@ const totalPhotos = photos.length;
   const lbCount = document.getElementById('lb-count')!;
   let view: HTMLElement[] = [];
   let pos = 0;
-  const visible = () => photos.filter((p) => !p.classList.contains('hide'));
+  // Only photos actually on screen — not filtered out, not still pending.
+  const visible = () => photos.filter((p) => !p.classList.contains('hide') && !isPending(p));
 
   function showAt(i: number) {
     if (view.length === 0) return;
@@ -225,7 +296,8 @@ const totalPhotos = photos.length;
     const it = view[pos];
     const img = it.querySelector('img');
     const cat = it.querySelector('.photo-cat')?.getAttribute('data-label') || '';
-    if (img) { lbImg.src = (img as HTMLImageElement).src; lbImg.style.display = 'block'; lbPh.style.display = 'none'; }
+    const full = img ? ((img as HTMLImageElement).getAttribute('src') || (img as HTMLElement).dataset.src) : null;
+    if (full) { lbImg.src = full; lbImg.style.display = 'block'; lbPh.style.display = 'none'; }
     else { lbImg.style.display = 'none'; lbPh.style.display = 'flex'; }
     lbMeta.textContent = cat.toUpperCase();
     lbCount.textContent = `${pos + 1} / ${view.length}`;
@@ -243,6 +315,8 @@ const totalPhotos = photos.length;
     animate(lb, { opacity: 0, duration: 200, ease: 'outQuart', onComplete: done });
   }
   photos.forEach((p) => p.addEventListener('click', () => openLb(p)));
+
+  updateMoreBtn();
   document.getElementById('lb-close')!.addEventListener('click', closeLb);
   document.getElementById('lb-prev')!.addEventListener('click', () => showAt(pos - 1));
   document.getElementById('lb-next')!.addEventListener('click', () => showAt(pos + 1));
