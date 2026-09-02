@@ -4,22 +4,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', 'inaldo-portrait.jpg'));
 
-const media = ['AFP', 'El Tiempo', 'Caracol TV', 'RCN', 'El Heraldo', 'Juegos Suramericanos', 'World Games', 'COC'];
+const media = ['AFP', 'El Tiempo', 'Caracol TV', 'RCN', 'El Heraldo', 'South American Games', 'World Games', 'COC'];
 const row1 = [...media, ...media];
 const row2 = [...media].reverse();
 const row2x = [...row2, ...row2];
 
 const events = [
-  { title: 'JUEGOS SURAMERICANOS', desc: 'Cobertura oficial de competencias continentales en múltiples disciplinas.' },
-  { title: 'WORLD GAMES — CALI 2013', desc: 'Registro de los Juegos Mundiales de deportes no olímpicos.' },
-  { title: 'COBERTURA NACIONAL', desc: 'Rugby, atletismo, surf, boxeo, gimnasia y más de 15 disciplinas.' },
+  { title: 'SOUTH AMERICAN GAMES', desc: 'Official coverage of continental competition across multiple disciplines.' },
+  { title: 'WORLD GAMES — CALI 2013', desc: 'Documenting the world championship of non-Olympic sports.' },
+  { title: 'NATIONAL COVERAGE', desc: 'Rugby, athletics, surf, boxing, gymnastics and more than 15 disciplines.' },
 ];
 ---
 
-<Layout title="Inaldo Pérez — IPEREZPHOTO" active="sobre-mi">
-  <main id="sobre">
+<Layout title="Inaldo Pérez — IPEREZPHOTO" active="about">
+  <main id="about">
     <div class="page-head reveal-group">
-      <p class="eyebrow reveal">// Sobre Mí</p>
+      <p class="eyebrow reveal">// About</p>
       <h1 class="h-display reveal">INALDO PÉREZ</h1>
     </div>
 
@@ -29,24 +29,24 @@ const events = [
         {hasPortrait ? (
           <img src="/inaldo-portrait.jpg" alt="Inaldo Pérez" loading="lazy" />
         ) : (
-          <div class="bio-ph"><span class="mono">Retrato</span></div>
+          <div class="bio-ph"><span class="mono">Portrait</span></div>
         )}
       </div>
       <div class="bio-text reveal-group">
-        <p class="reveal">Fotógrafo deportivo con más de una década capturando los momentos más intensos del deporte colombiano e internacional. Especializado en fotografía de acción, su trabajo ha sido publicado por las principales agencias y medios del país.</p>
-        <p class="reveal">Desde los Juegos Suramericanos hasta el World Games, su lente ha documentado más de 15 disciplinas deportivas con una mirada que combina precisión técnica y narrativa visual.</p>
+        <p class="reveal">Sports photographer with more than a decade capturing the most intense moments of Colombian and international sport. Specialized in action photography, his work has been published by the country’s leading agencies and media outlets.</p>
+        <p class="reveal">From the South American Games to the World Games, his lens has documented more than 15 sporting disciplines with an eye that pairs technical precision with visual storytelling.</p>
 
         <div class="stats reveal">
-          <div class="stat"><span class="stat-n">15+</span><span class="stat-l mono">Disciplinas</span></div>
-          <div class="stat"><span class="stat-n">10+</span><span class="stat-l mono">Años activo</span></div>
-          <div class="stat"><span class="stat-n stat-sm">Internacional</span><span class="stat-l mono">AFP · El Tiempo · RCN</span></div>
+          <div class="stat"><span class="stat-n">15+</span><span class="stat-l mono">Disciplines</span></div>
+          <div class="stat"><span class="stat-n">10+</span><span class="stat-l mono">Years active</span></div>
+          <div class="stat"><span class="stat-n stat-sm">International</span><span class="stat-l mono">AFP · El Tiempo · RCN</span></div>
         </div>
       </div>
     </section>
 
     <section class="press">
       <div class="press-head reveal-group">
-        <p class="eyebrow reveal">// Publicado En</p>
+        <p class="eyebrow reveal">// Published In</p>
         <h2 class="h-display reveal" style="font-size:clamp(36px,6vw,48px)">PROFESSIONAL RELATIONSHIPS</h2>
       </div>
 
@@ -56,7 +56,7 @@ const events = [
       <div class="events">
         {events.map((e) => (
           <div class="event reveal">
-            <p class="event-tag mono">Evento Destacado</p>
+            <p class="event-tag mono">Featured Event</p>
             <h3 class="event-title">{e.title}</h3>
             <p class="event-desc">{e.desc}</p>
           </div>
@@ -67,7 +67,7 @@ const events = [
 </Layout>
 
 <style>
-  #sobre { padding-bottom: 120px; }
+  #about { padding-bottom: 120px; }
   .bio { display: grid; grid-template-columns: 40% 60%; gap: 72px; align-items: start; max-width: 1280px; margin: 0 auto; padding: 24px 40px 96px; }
   .bio-photo { position: relative; }
   .bio-rule { position: absolute; top: -2px; left: -2px; width: 2px; height: 80px; background: var(--accent); z-index: 2; }
@@ -90,7 +90,7 @@ const events = [
   .mtrack { display: flex; width: max-content; will-change: transform; }
   .mtrack.left { animation: mL 25s linear infinite; }
   .mtrack.right { animation: mR 30s linear infinite; }
-  .logo { flex: 0 0 auto; padding: 0 56px; font-family: var(--font-mono); font-size: 14px; text-transform: uppercase; letter-spacing: 0.15em; color: #c9c9c9; white-space: nowrap; transition: color 0.3s ease; }
+  .logo { flex: 0 0 auto; padding: 0 56px; font-family: var(--font-mono); font-size: 14px; text-transform: uppercase; letter-spacing: 0.15em; color: #f2f2f2; white-space: nowrap; transition: color 0.3s ease; }
   .logo:hover { color: #fff; }
   @keyframes mL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @keyframes mR { from { transform: translateX(-50%); } to { transform: translateX(0); } }

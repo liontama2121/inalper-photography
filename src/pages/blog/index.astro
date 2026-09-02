@@ -3,18 +3,18 @@ import Layout from '../../layouts/Layout.astro';
 import { posts } from '../../lib/posts.js';
 ---
 
-<Layout title="Blog — Detrás del Lente — IPEREZPHOTO" active="blog">
+<Layout title="Blog — Behind the Lens — IPEREZPHOTO" active="blog">
   <main id="blog">
     <div class="page-head reveal-group">
       <p class="eyebrow reveal">// Blog</p>
-      <h1 class="h-display reveal">DETRÁS DEL LENTE</h1>
-      <p class="sub reveal">Historias, técnica y proceso creativo.</p>
+      <h1 class="h-display reveal">BEHIND THE LENS</h1>
+      <p class="sub reveal">Stories, technique and creative process.</p>
     </div>
 
     {posts.length === 0 ? (
       <section class="empty">
-        <p class="empty-tag mono">[ Próximamente ]</p>
-        <p class="empty-sub">Las primeras historias están en camino.</p>
+        <p class="empty-tag mono">[ Coming soon ]</p>
+        <p class="empty-sub">The first stories are on their way.</p>
       </section>
     ) : (
       <section class="post-list">

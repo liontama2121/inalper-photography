@@ -5,11 +5,11 @@ import path from 'node:path';
 
 // Pretty labels + preferred order for known categories.
 const LABELS = {
-  rugby: 'Rugby', atletismo: 'Atletismo', natacion: 'Natación', taekwondo: 'Taekwondo',
-  gimnasia: 'Gimnasia', surf: 'Surf', ciclismo: 'Ciclismo', boxeo: 'Boxeo',
-  basketball: 'Basketball', futbol: 'Fútbol', patinaje: 'Patinaje', halterofilia: 'Halterofilia',
-  esgrima: 'Esgrima', 'juegos-mundiales': 'Juegos Mundiales', eventos: 'Eventos',
-  paisajes: 'Paisajes', naturaleza: 'Naturaleza',
+  rugby: 'Rugby', atletismo: 'Athletics', natacion: 'Swimming', taekwondo: 'Taekwondo',
+  gimnasia: 'Gymnastics', surf: 'Surf', ciclismo: 'Cycling', boxeo: 'Boxing',
+  basketball: 'Basketball', futbol: 'Soccer', patinaje: 'Skating', halterofilia: 'Weightlifting',
+  esgrima: 'Fencing', 'juegos-mundiales': 'World Games', eventos: 'Events',
+  paisajes: 'Landscapes', naturaleza: 'Nature',
 };
 const ORDER = Object.keys(LABELS);
 const prettify = (s) => LABELS[s] || s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -37,7 +37,7 @@ scanned.sort((a, b) => {
   return a.cat.localeCompare(b.cat);
 });
 
-const categories = [{ cat: 'todas', label: 'Todas' }, ...scanned.map((s) => ({ cat: s.cat, label: prettify(s.cat) }))];
+const categories = [{ cat: 'todas', label: 'All' }, ...scanned.map((s) => ({ cat: s.cat, label: prettify(s.cat) }))];
 
 // Flat list of all photos, in category order.
 const photos = scanned.flatMap((s) =>
@@ -50,11 +50,11 @@ const totalPhotos = photos.length;
 const BATCH = 12;
 ---
 
-<Layout title="Portafolio — IPEREZPHOTO" active="portafolio">
-  <main id="portafolio">
+<Layout title="Portfolio — IPEREZPHOTO" active="portfolio">
+  <main id="portfolio">
     <div class="page-head reveal-group">
-      <p class="eyebrow reveal">// Portafolio</p>
-      <h1 class="h-display reveal">EL TRABAJO</h1>
+      <p class="eyebrow reveal">// Portfolio</p>
+      <h1 class="h-display reveal">THE WORK</h1>
     </div>
 
     <!-- ===== Category nav ===== -->
@@ -87,23 +87,23 @@ const BATCH = 12;
       </div>
 
       <div id="gal-more">
-        <button id="load-more" class="mono">Cargar más <span id="more-count"></span></button>
+        <button id="load-more" class="mono">Load more <span id="more-count"></span></button>
       </div>
     </section>
   </main>
 
   <!-- ===== Lightbox ===== -->
   <div id="lightbox" aria-hidden="true" role="dialog" aria-modal="true">
-    <button id="lb-close" aria-label="Cerrar"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
-    <button id="lb-prev" class="lb-nav" aria-label="Anterior"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M15 5l-8 7 8 7" /></svg></button>
-    <figure id="lb-stage"><img id="lb-img" alt="" /><div id="lb-ph"><span class="mono">Próximamente</span></div></figure>
-    <button id="lb-next" class="lb-nav" aria-label="Siguiente"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5l8 7-8 7" /></svg></button>
+    <button id="lb-close" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
+    <button id="lb-prev" class="lb-nav" aria-label="Previous"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M15 5l-8 7 8 7" /></svg></button>
+    <figure id="lb-stage"><img id="lb-img" alt="" /><div id="lb-ph"><span class="mono">Coming soon</span></div></figure>
+    <button id="lb-next" class="lb-nav" aria-label="Next"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5l8 7-8 7" /></svg></button>
     <div id="lb-bar" class="mono"><span id="lb-meta"></span><span id="lb-count"></span></div>
   </div>
 </Layout>
 
 <style>
-  #portafolio { padding-bottom: 100px; }
+  #portfolio { padding-bottom: 100px; }
 
   /* ===== Category nav ===== */
   /* Wraps instead of scrolling: with 18 categories a single strip ran wider
