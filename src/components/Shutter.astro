@@ -1,0 +1,86 @@
+---
+// Vertical-travel focal-plane shutter. Blades drop from the top to close
+// and keep travelling down to open, the way a pro body's curtains run.
+// Used between pages and by the photo viewer:
+//   await window.shutter.fire(() => swapSomething(), { close: 140, open: 200 })
+const BLADES = 7;
+---
+
+<div id="shutter" aria-hidden="true">
+  {Array.from({ length: BLADES }, (_, i) => <span class="blade" style={`--i:${i}`} />)}
+</div>
+
+<style>
+  #shutter {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-shutter);
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+    pointer-events: none;
+    visibility: hidden;
+  }
+  #shutter.on { visibility: visible; }
+  .blade {
+    display: block;
+    background: linear-gradient(#18181b, #0b0b0c 30%, #0b0b0c);
+    box-shadow: 0 -1px 0 #26262a inset, 0 6px 14px rgba(0, 0, 0, 0.45);
+    transform: translateY(calc(-100% * (var(--i) + 1)));
+  }
+  .blade:last-child { border-bottom: 3px solid var(--red); }
+  /* Set from <head> when arriving from an internal link: start closed. */
+  :global(html.shutter-closed) #shutter { visibility: visible; }
+  :global(html.shutter-closed) .blade { transform: none; }
+</style>
+
+<script>
+  import { animate, stagger } from 'animejs';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const el = document.getElementById('shutter')!;
+  const blades = Array.from(el.querySelectorAll<HTMLElement>('.blade'));
+  const N = blades.length;
+  const above = (i: number) => `${-100 * (i + 1)}%`;
+  const below = (i: number) => `${100 * (N - i)}%`;
+
+  const run = (params: Record<string, unknown>) =>
+    new Promise<void>((resolve) => animate(blades, { ...params, onComplete: () => resolve() }));
+
+  function close(ms = 220) {
+    el.classList.add('on');
+    return run({ translateY: { from: (_: unknown, i: number) => above(i), to: '0%' }, duration: ms, delay: stagger(ms / 18, { reversed: true }), ease: 'inQuad' });
+  }
+  async function open(ms = 260) {
+    await run({ translateY: { from: '0%', to: (_: unknown, i: number) => below(i) }, duration: ms, delay: stagger(ms / 18, { reversed: true }), ease: 'outQuad' });
+    document.documentElement.classList.remove('shutter-closed');
+    el.classList.remove('on');
+    blades.forEach((b, i) => (b.style.transform = `translateY(${above(i)})`));
+  }
+  async function fire(between?: () => void, t: { close?: number; open?: number } = {}) {
+    if (reduce) { between?.(); return; }
+    await close(t.close ?? 140);
+    between?.();
+    await open(t.open ?? 200);
+  }
+
+  (window as any).shutter = { close, open, fire };
+
+  // Arriving through the shutter: run the second half.
+  if (document.documentElement.classList.contains('shutter-closed')) requestAnimationFrame(() => open(320));
+
+  // Leaving: close the shutter, then navigate.
+  document.addEventListener('click', (e) => {
+    if (reduce || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+    if (!a || a.target || a.hasAttribute('download')) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
+    if (url.href === location.href) return;
+    e.preventDefault();
+    try { sessionStorage.setItem('shutter', '1'); } catch {}
+    close(240).then(() => (location.href = url.href));
+  });
+
+  // Back/forward cache restores the closed frame; reopen it.
+  window.addEventListener('pageshow', (e) => { if (e.persisted && el.classList.contains('on')) open(200); });
+</script>

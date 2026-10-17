@@ -1,141 +1,171 @@
 /* ============================================================
-   IPEREZPHOTO — Design system
-   Dark, technical, camera-grade. Zero border-radius.
+   IPEREZPHOTO, design system
+   Pitchside accreditation: Canon black ground, Canon red as solid
+   bib fields carrying white lettering. All corners sharp.
+   One dark theme on purpose: photographs are judged on black.
    ============================================================ */
 :root {
-  --void: #080808;
-  --deep: #0f0f0f;
-  --surface: #161616;
-  --border: #1e1e1e;
-  --muted: #333333;
-  --secondary: #888888;
-  --primary: #ffffff;
-  --accent: #cc0000;
-  --accent-dim: rgba(204, 0, 0, 0.12);
+  color-scheme: dark;
 
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --ink: #0b0b0c;
+  --panel: #141416;
+  --panel-2: #1c1c1f;
+  --line: #2a2a2e;
+  --fg: #f4f4f2;
+  --fg-2: #b4b4b8;
+  --fg-3: #8c8c92;
+  --red: #cc0000;
+  --red-hi: #e3120b;
+  --on-red: #ffffff;
 
-  --nav-h: 60px;
+  --font: 'Archivo', system-ui, sans-serif;
+  --font-data: 'Martian Mono', ui-monospace, monospace;
+
+  --nav-h: 64px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1360px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* z-index scale */
+  --z-wall-ui: 10;
+  --z-nav: 100;
+  --z-float: 200;
+  --z-drawer: 300;
+  --z-lightbox: 400;
+  --z-shutter: 500;
 }
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-  border-radius: 0 !important; /* RULE 1: zero radius */
-}
+*::after { box-sizing: border-box; border-radius: 0; }
 
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: var(--nav-h);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  scrollbar-color: var(--line) var(--ink);
 }
 
 body {
   margin: 0;
-  background: var(--void);
-  color: var(--primary);
-  font-family: var(--font-body);
-  font-weight: 300;
-  line-height: 1.5;
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
   overflow-x: hidden;
 }
 
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
-button { font-family: inherit; }
+button { font: inherit; color: inherit; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
 
-/* Shared atoms */
-.mono { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.2em; }
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.2em;
+::selection { background: var(--red); color: var(--on-red); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--line); border: 2px solid var(--ink); }
+::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+/* ===== Type atoms ===== */
+/* Bib lettering: wide, black weight. */
+.bib-type {
+  font-family: var(--font);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 16px;
-}
-.h-display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  color: var(--primary);
   margin: 0;
 }
-.page-head {
-  padding: 140px 40px 48px;
-  max-width: 1280px;
-  margin: 0 auto;
+/* Zone codes and tall headlines: condensed, black weight. */
+.code-type {
+  font-family: var(--font);
+  font-weight: 900;
+  font-stretch: 62%;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
 }
-.page-head h1 { font-size: clamp(48px, 9vw, 80px); }
-
-/* Scroll-reveal initial state */
-.reveal { opacity: 0; will-change: transform, opacity; }
-
-::selection { background: var(--accent); color: var(--primary); }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--void); }
-::-webkit-scrollbar-thumb { background: var(--border); }
-
-/* ============================================================
-   Custom cursor — desktop fine-pointer only
-   ============================================================ */
-@media (pointer: fine) {
-  #cursor-dot,
-  #cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-  }
-  #cursor-dot { width: 5px; height: 5px; background: #fff; mix-blend-mode: difference; }
-  #cursor-ring {
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--accent);
-    opacity: 0;
-    transition: opacity 0.15s ease;
-  }
-  #cursor-ring.active { opacity: 1; }
-}
-@media (pointer: coarse) {
-  #cursor-dot, #cursor-ring { display: none; }
+/* Real data only: counts, frame numbers, zone codes. */
+.data {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
-/* ============================================================
-   Floating WhatsApp — all pages
-   ============================================================ */
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+.page-head { padding-top: calc(var(--nav-h) + clamp(48px, 8vw, 104px)); padding-bottom: clamp(32px, 5vw, 56px); }
+.page-head h1 { font-size: clamp(44px, 8vw, 104px); }
+.page-head .lede { max-width: 52ch; margin: 20px 0 0; font-size: clamp(16px, 1.4vw, 19px); color: var(--fg-2); }
+
+/* Visually hidden, still announced. */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ===== Controls ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  font-stretch: 112%;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out), transform 0.12s var(--ease-out);
+}
+.btn:active { transform: translateY(1px) scale(0.98); }
+.btn .ico { width: 18px; height: 18px; flex: none; }
+.btn-red { background: var(--red); color: var(--on-red); }
+.btn-red:hover { background: var(--red-hi); }
+.btn-ink { background: var(--ink); color: var(--fg); }
+.btn-ink:hover { background: var(--panel-2); }
+.btn-line { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 1px var(--fg-3); }
+.btn-line:hover { box-shadow: inset 0 0 0 1px var(--fg); background: rgba(244, 244, 242, 0.06); }
+
+/* Phosphor icons are inlined raw; let them inherit color. */
+.ico svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+
+/* Scroll-reveal: content is visible by default, JS opts in to hiding it. */
+.js-reveal .reveal { opacity: 0; }
+
+/* ===== Floating WhatsApp ===== */
 #wa-float {
   position: fixed;
-  right: 32px;
-  bottom: 32px;
-  z-index: 200;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #25d366;
-  color: #fff;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  right: 24px;
+  bottom: 24px;
+  z-index: var(--z-float);
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: var(--red);
+  color: var(--on-red);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.4s ease, transform 0.2s ease;
   pointer-events: none;
+  transition: background-color 0.2s var(--ease-out);
 }
-#wa-float.visible { opacity: 1; transform: scale(1); pointer-events: auto; }
-#wa-float:hover { transform: scale(1.08); }
-@media (max-width: 768px) { #wa-float { right: 20px; bottom: 20px; } }
+#wa-float .ico { width: 28px; height: 28px; }
+#wa-float:hover { background: var(--red-hi); }
+#wa-float.visible { pointer-events: auto; }
+@media (max-width: 768px) { #wa-float { right: 12px; bottom: 12px; width: 48px; height: 48px; } #wa-float .ico { width: 24px; height: 24px; } }
 
-/* ============================================================
-   prefers-reduced-motion — kill all animation (RULE 11)
-   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -143,5 +173,5 @@ button { font-family: inherit; }
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1 !important; }
+  .js-reveal .reveal { opacity: 1 !important; }
 }

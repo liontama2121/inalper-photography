@@ -1,0 +1,18 @@
+---
+// Phosphor icons (one family, one weight: bold), inlined at build time.
+import whatsapp from '@phosphor-icons/core/assets/fill/whatsapp-logo-fill.svg?raw';
+import instagram from '@phosphor-icons/core/assets/bold/instagram-logo-bold.svg?raw';
+import envelope from '@phosphor-icons/core/assets/bold/envelope-simple-bold.svg?raw';
+import arrow from '@phosphor-icons/core/assets/bold/arrow-up-right-bold.svg?raw';
+import x from '@phosphor-icons/core/assets/bold/x-bold.svg?raw';
+import left from '@phosphor-icons/core/assets/bold/caret-left-bold.svg?raw';
+import right from '@phosphor-icons/core/assets/bold/caret-right-bold.svg?raw';
+import list from '@phosphor-icons/core/assets/bold/list-bold.svg?raw';
+import hand from '@phosphor-icons/core/assets/bold/hand-grabbing-bold.svg?raw';
+
+const ICONS = { whatsapp, instagram, envelope, arrow, x, left, right, list, hand };
+const { name, class: cls = '', size } = Astro.props;
+const style = size ? `width:${size}px;height:${size}px` : undefined;
+---
+
+<span class={`ico ${cls}`} style={style} aria-hidden="true" set:html={ICONS[name]} />

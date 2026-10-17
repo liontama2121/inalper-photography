@@ -1,23 +1,38 @@
+---
+import { EMAIL, MAIL_LINK, INSTAGRAM, INSTAGRAM_URL, PHONE_DISPLAY, WA_LINK } from '../lib/contact.js';
+---
+
 <footer id="footer">
-  <span class="mono">© 2026 IPEREZPHOTO — All rights reserved</span>
-  <span class="mono">Made with love by JuanCode</span>
+  <div class="wrap f-grid">
+    <a href="/" class="f-logo" aria-label="IPEREZPHOTO, home"><img src="/IPEREZLOGO.png" alt="" width="180" height="54" loading="lazy" /></a>
+    <nav class="f-col" aria-label="Footer">
+      <a href="/portfolio">Portfolio</a>
+      <a href="/about">About</a>
+      <a href="/blog">Blog</a>
+      <a href="/contact">Contact</a>
+    </nav>
+    <div class="f-col">
+      <a href={WA_LINK} target="_blank" rel="noopener">WhatsApp {PHONE_DISPLAY}</a>
+      <a href={MAIL_LINK}>{EMAIL}</a>
+      <a href={INSTAGRAM_URL} target="_blank" rel="noopener">Instagram {INSTAGRAM}</a>
+    </div>
+  </div>
+  <div class="wrap f-base">
+    <span>© 2026 IPEREZPHOTO. All rights reserved.</span>
+    <span>Site by JuanCode</span>
+  </div>
 </footer>
 
 <style>
-  #footer {
-    background: var(--void);
-    border-top: 1px solid #1a1a1a;
-    padding: 28px 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  #footer span { font-size: 9px; letter-spacing: 0.2em; color: #2a2a2a; }
-  #footer span:last-child { text-align: right; }
+  #footer { border-top: 1px solid var(--line); padding: 56px 0 28px; }
+  .f-grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 40px; align-items: start; }
+  .f-logo img { height: 40px; width: auto; }
+  .f-col { display: flex; flex-direction: column; gap: 10px; font-size: 15px; color: var(--fg-2); }
+  .f-col a { width: fit-content; transition: color 0.2s var(--ease-out); }
+  .f-col a:hover { color: var(--fg); }
+  .f-base { display: flex; justify-content: space-between; gap: 16px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--fg-3); }
   @media (max-width: 768px) {
-    #footer { flex-direction: column; text-align: center; padding: 24px 16px; }
-    #footer span:last-child { text-align: center; }
+    .f-grid { grid-template-columns: 1fr; gap: 28px; }
+    .f-base { flex-direction: column; gap: 6px; }
   }
 </style>

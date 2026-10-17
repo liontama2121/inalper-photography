@@ -1,333 +1,155 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import fs from 'node:fs';
-import path from 'node:path';
+import ZoneRow from '../components/ZoneRow.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { photos, zones } from '../lib/photos.js';
 
-// Pretty labels + preferred order for known categories.
-const LABELS = {
-  rugby: 'Rugby', atletismo: 'Athletics', natacion: 'Swimming', taekwondo: 'Taekwondo',
-  gimnasia: 'Gymnastics', surf: 'Surf', ciclismo: 'Cycling', boxeo: 'Boxing',
-  basketball: 'Basketball', futbol: 'Soccer', patinaje: 'Skating', halterofilia: 'Weightlifting',
-  esgrima: 'Fencing', 'juegos-mundiales': 'World Games', eventos: 'Events',
-  paisajes: 'Landscapes', naturaleza: 'Nature',
-};
-const ORDER = Object.keys(LABELS);
-const prettify = (s) => LABELS[s] || s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-
-const IMG_RE = /\.(jpe?g|png|webp|avif)$/i;
-const photosDir = path.join(process.cwd(), 'public', 'photos');
-
-// Scan every category folder for real images at build time.
-let scanned = [];
-if (fs.existsSync(photosDir)) {
-  for (const dir of fs.readdirSync(photosDir)) {
-    const full = path.join(photosDir, dir);
-    if (!fs.statSync(full).isDirectory()) continue;
-    const files = fs.readdirSync(full).filter((f) => IMG_RE.test(f)).sort();
-    if (files.length === 0) continue;
-    scanned.push({ cat: dir, count: files.length, files });
-  }
-}
-// Order: known cats first (ORDER), unknown appended alphabetically.
-scanned.sort((a, b) => {
-  const ia = ORDER.indexOf(a.cat), ib = ORDER.indexOf(b.cat);
-  if (ia !== -1 && ib !== -1) return ia - ib;
-  if (ia !== -1) return -1;
-  if (ib !== -1) return 1;
-  return a.cat.localeCompare(b.cat);
-});
-
-const categories = [{ cat: 'todas', label: 'All' }, ...scanned.map((s) => ({ cat: s.cat, label: prettify(s.cat) }))];
-
-// Flat list of all photos, in category order.
-const photos = scanned.flatMap((s) =>
-  s.files.map((f) => ({ cat: s.cat, label: prettify(s.cat), src: `/photos/${s.cat}/${encodeURIComponent(f)}` }))
-);
-const totalPhotos = photos.length;
-
-// Only this many <img src> ship in the HTML; the rest carry data-src and are
-// wired up by the "load more" button. 574 photos at once made the page crawl.
-const BATCH = 12;
+// Only this many thumbnails ship with a src; "Load more" wires up the rest.
+const BATCH = 24;
+const items = photos.map((p) => ({ src: p.src, label: p.label, code: p.code, n: p.n, of: p.of, caption: p.caption, shot: p.shot }));
 ---
 
-<Layout title="Portfolio — IPEREZPHOTO" active="portfolio">
+<Layout title="Portfolio | Inaldo Pérez, Sports Photographer" active="portfolio">
   <main id="portfolio">
-    <div class="page-head reveal-group">
-      <p class="eyebrow reveal">// Portfolio</p>
-      <h1 class="h-display reveal">THE WORK</h1>
+    <header class="wrap page-head reveal-group">
+      <h1 class="bib-type reveal">The work</h1>
+      <p class="lede reveal">{photos.length} frames from {zones.length} zones. Pick a discipline to see it alone.</p>
+    </header>
+
+    <div id="filter-bar">
+      <ZoneRow id="pf-zones" zones={zones} total={photos.length} />
     </div>
 
-    <!-- ===== Category nav ===== -->
-    <nav id="cat-nav">
-      <div id="cat-list">
-        {categories.map((c, i) => (
-          <button class={`cat-btn${i === 0 ? ' active' : ''}`} data-cat={c.cat}>{c.label}</button>
-        ))}
-      </div>
-    </nav>
-
-    <!-- ===== Masonry gallery ===== -->
-    <section id="gal">
+    <section id="gal" aria-label="Photographs">
       <div id="gal-grid">
         {photos.map((p, i) => (
-          <figure class={`photo-item${i < BATCH ? '' : ' pending'}`} data-cat={p.cat}>
-            <img
-              src={i < BATCH ? p.src : undefined}
-              data-src={p.src}
-              alt={`${p.label} — Inaldo Pérez`}
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="photo-ov">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1"><path d="M12 5v14M5 12h14" /></svg>
-              <span class="photo-cat mono" data-label={p.label}>{p.label}</span>
-            </div>
-          </figure>
+          <button class={`photo${i < BATCH ? '' : ' pending'}`} data-i={i} data-cat={p.cat} aria-label={`${p.label}, frame ${p.n} of ${p.of}. Open`}>
+            <img src={i < BATCH ? p.md : undefined} data-src={p.md} alt="" width={p.w} height={p.h} loading="lazy" decoding="async" />
+            <span class="ph-tag"><span class="ph-code">{p.code}</span><span class="data">{String(p.n).padStart(3, '0')}</span></span>
+          </button>
         ))}
       </div>
 
       <div id="gal-more">
-        <button id="load-more" class="mono">Load more <span id="more-count"></span></button>
+        <button id="load-more" class="btn btn-line">Load more <span id="more-count" class="data"></span></button>
       </div>
     </section>
+
+    <script type="application/json" id="pf-items" set:html={JSON.stringify(items)} />
   </main>
 
-  <!-- ===== Lightbox ===== -->
-  <div id="lightbox" aria-hidden="true" role="dialog" aria-modal="true">
-    <button id="lb-close" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
-    <button id="lb-prev" class="lb-nav" aria-label="Previous"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M15 5l-8 7 8 7" /></svg></button>
-    <figure id="lb-stage"><img id="lb-img" alt="" /><div id="lb-ph"><span class="mono">Coming soon</span></div></figure>
-    <button id="lb-next" class="lb-nav" aria-label="Next"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5l8 7-8 7" /></svg></button>
-    <div id="lb-bar" class="mono"><span id="lb-meta"></span><span id="lb-count"></span></div>
-  </div>
+  <Lightbox />
 </Layout>
 
 <style>
-  #portfolio { padding-bottom: 100px; }
+  #portfolio { padding-bottom: 120px; }
+  #filter-bar { position: sticky; top: var(--nav-h); z-index: 20; }
 
-  /* ===== Category nav ===== */
-  /* Wraps instead of scrolling: with 18 categories a single strip ran wider
-     than the viewport and the overflow was invisible (no scrollbar shown). */
-  #cat-nav {
-    margin: 40px 0 32px;
-    border-bottom: 1px solid #1a1a1a;
-    padding: 0 40px;
+  #gal { padding: 4px var(--gutter) 0; }
+  #gal-grid { column-count: 4; column-gap: 4px; }
+  .photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 0 0 4px;
+    padding: 0;
+    border: 0;
+    break-inside: avoid;
+    overflow: hidden;
+    background: var(--panel);
+    cursor: zoom-in;
   }
+  .photo img { width: 100%; height: auto; transition: transform 0.6s var(--ease-out); }
+  .photo:hover img { transform: scale(1.03); }
+  .photo.pending, .photo.hide { display: none; }
 
-  #cat-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0;
-    max-width: 1200px;
-    margin: 0 auto;
+  /* Zone code tag: hidden until hover/focus, a bib corner on the frame */
+  .ph-tag {
+    position: absolute;
+    left: 0; bottom: 0;
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 6px 10px 4px;
+    background: var(--red);
+    color: var(--on-red);
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.25s var(--ease-out), transform 0.35s var(--ease-out);
   }
+  .ph-code { font-weight: 900; font-stretch: 62%; font-size: 22px; line-height: 1; }
+  .photo:hover .ph-tag, .photo:focus-visible .ph-tag { opacity: 1; transform: none; }
+  .photo:focus-visible { outline-offset: -2px; }
 
-  .cat-btn {
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    padding: 12px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #444444;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-    white-space: nowrap;
-    margin-bottom: -1px;
-  }
-  .cat-btn:hover { color: #888888; }
-  .cat-btn.active {
-    color: #ffffff;
-    border-bottom-color: #cc0000;
-  }
-
-  /* ===== Gallery ===== */
-  #gal { padding: 24px 40px 0; }
-  #gal-grid { column-count: 3; column-gap: 3px; }
-  .photo-item { position: relative; margin: 0 0 3px; break-inside: avoid; overflow: hidden; cursor: crosshair; background: var(--surface); }
-  .photo-item img { width: 100%; height: auto; display: block; }
-  .photo-ov { position: absolute; inset: 0; background: rgba(8,8,8,0); display: flex; align-items: center; justify-content: center; pointer-events: none; transition: background 0.25s ease; }
-  .photo-ov svg { opacity: 0; transition: opacity 0.25s ease; }
-  .photo-cat { position: absolute; left: 10px; bottom: 10px; font-size: 9px; color: #fff; opacity: 0; transition: opacity 0.25s ease; }
-  .photo-item:hover .photo-ov { background: rgba(8,8,8,0.65); }
-  .photo-item:hover .photo-ov svg, .photo-item:hover .photo-cat { opacity: 1; }
-  .photo-item.hide { display: none; }
-  /* not yet requested — the img has no src until "load more" assigns it */
-  .photo-item.pending { display: none; }
-
-  #gal-more { display: flex; justify-content: center; padding: 48px 40px 0; }
-  #load-more {
-    background: none; border: 1px solid var(--border); color: #fff;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
-    text-transform: uppercase; padding: 16px 40px; cursor: pointer;
-    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
-  }
-  #load-more:hover { background: #fff; color: var(--void); border-color: #fff; }
+  #gal-more { display: flex; justify-content: center; padding-top: 48px; }
   #load-more[hidden] { display: none; }
-  #more-count { color: #555; margin-left: 6px; }
-  #load-more:hover #more-count { color: var(--void); }
+  #more-count { color: var(--fg-3); }
 
-  @media (max-width: 1024px) { #gal-grid { column-count: 2; } }
-  @media (max-width: 768px) {
-    .page-head { padding-top: 120px; }
-    #cat-nav { padding: 0 10px; }
-    /* tighter cells so every category fits on screen; 40px min touch height */
-    .cat-btn { padding: 12px 11px; font-size: 9px; letter-spacing: 0.1em; }
-    #gal { padding: 16px 16px 0; }
-    #gal-grid { column-count: 1; column-gap: 2px; }
-  }
-
-  @media (max-width: 420px) {
-    .cat-btn { padding: 11px 9px; letter-spacing: 0.06em; }
-  }
-
-  /* ===== Lightbox ===== */
-  #lightbox { position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.97); display: none; align-items: center; justify-content: center; opacity: 0; }
-  #lightbox.open { display: flex; }
-  #lb-stage { margin: 0; display: flex; align-items: center; justify-content: center; }
-  #lb-img { max-width: 90vw; max-height: 88vh; object-fit: contain; display: none; }
-  #lb-ph { width: min(70vw, 540px); aspect-ratio: 3/2; background: var(--surface); display: flex; align-items: center; justify-content: center; }
-  #lb-ph span { font-size: 9px; color: #444; }
-  #lb-close { position: fixed; top: 24px; right: 28px; background: none; border: none; color: #fff; cursor: pointer; transition: color 0.2s; }
-  .lb-nav { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: #fff; cursor: pointer; padding: 16px; transition: color 0.2s; }
-  #lb-prev { left: 24px; } #lb-next { right: 24px; }
-  #lb-close:hover, .lb-nav:hover { color: var(--accent); }
-  #lb-bar { position: fixed; bottom: 28px; left: 0; width: 100%; padding: 0 40px; display: flex; justify-content: space-between; font-size: 10px; color: #444; }
-  @media (max-width: 768px) { .lb-nav { display: none; } }
+  @media (max-width: 1200px) { #gal-grid { column-count: 3; } }
+  @media (max-width: 860px) { #gal-grid { column-count: 2; } }
+  @media (max-width: 480px) { #gal { padding: 4px 4px 0; } #gal-grid { column-gap: 3px; } .photo { margin-bottom: 3px; } }
 </style>
 
 <script>
   import { animate } from 'animejs';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ===== Batched loading =====
-  // Photos past the first batch ship without a src, so the browser never
-  // requests them until the visitor asks for more.
-  const BATCH = 12;
-  const photos = Array.from(document.querySelectorAll<HTMLElement>('.photo-item'));
+  const BATCH = 24;
+  const items = JSON.parse(document.getElementById('pf-items')!.textContent || '[]');
+  const tiles = Array.from(document.querySelectorAll<HTMLButtonElement>('#gal-grid .photo'));
   const moreBtn = document.getElementById('load-more') as HTMLButtonElement;
   const moreCount = document.getElementById('more-count')!;
-  let currentCat = 'todas';
+  const zoneBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('#pf-zones .zone'));
+  let cat = 'all';
 
-  const inCat = (p: HTMLElement) => currentCat === 'todas' || p.dataset.cat === currentCat;
-  const isPending = (p: HTMLElement) => p.classList.contains('pending');
+  const inCat = (t: HTMLElement) => cat === 'all' || t.dataset.cat === cat;
+  const pending = (t: HTMLElement) => t.classList.contains('pending');
 
-  function updateMoreBtn() {
-    const left = photos.filter((p) => inCat(p) && isPending(p)).length;
+  function updateMore() {
+    const left = tiles.filter((t) => inCat(t) && pending(t)).length;
     moreBtn.hidden = left === 0;
-    moreCount.textContent = left > 0 ? `(${left})` : '';
+    moreCount.textContent = left ? `(${left})` : '';
   }
 
-  // Assign src and drop .pending for the next n photos of the active category.
+  function enter(list: HTMLElement[]) {
+    if (reduce || !list.length) return;
+    animate(list, { opacity: [0, 1], translateY: [24, 0], duration: 700, delay: (_, i) => Math.min(i, 24) * 30, ease: 'outExpo' });
+  }
+
   function revealMore(n: number) {
-    const batch = photos.filter((p) => inCat(p) && isPending(p)).slice(0, n);
-    batch.forEach((p) => {
-      const img = p.querySelector('img') as HTMLImageElement | null;
-      if (img && !img.getAttribute('src') && img.dataset.src) img.src = img.dataset.src;
-      p.classList.remove('pending');
+    const batch = tiles.filter((t) => inCat(t) && pending(t)).slice(0, n);
+    batch.forEach((t) => {
+      const img = t.querySelector('img')!;
+      if (!img.getAttribute('src')) img.src = img.dataset.src!;
+      t.classList.remove('pending');
     });
-    if (!reduce && batch.length) {
-      animate(batch, {
-        opacity: [0, 1], scale: [0.96, 1], duration: 320,
-        delay: (_, i) => Math.min(i, 24) * 18, ease: 'outQuart',
-      });
-    }
-    updateMoreBtn();
+    enter(batch);
+    updateMore();
   }
-
   moreBtn.addEventListener('click', () => revealMore(BATCH));
 
-  // ===== Gallery filter =====
-  function filterGallery(cat: string) {
-    currentCat = cat;
-    const hideItems: HTMLElement[] = [];
-    const showItems: HTMLElement[] = [];
-    photos.forEach((p) => {
-      // pending photos stay out of the animation — revealMore handles them
-      if (isPending(p)) return;
-      if (inCat(p)) showItems.push(p); else hideItems.push(p);
+  zoneBtns.forEach((btn) => btn.addEventListener('click', () => {
+    cat = btn.dataset.cat || 'all';
+    zoneBtns.forEach((b) => { const on = b === btn; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
+    const shown: HTMLElement[] = [];
+    tiles.forEach((t) => {
+      if (pending(t)) return;
+      const on = inCat(t);
+      t.classList.toggle('hide', !on);
+      if (on) shown.push(t);
     });
-    // Always keep at least one batch on screen for the new category.
-    const deficit = BATCH - showItems.length;
-    if (deficit > 0) revealMore(deficit);
-    updateMoreBtn();
-    if (reduce) {
-      hideItems.forEach((p) => p.classList.add('hide'));
-      showItems.forEach((p) => { p.classList.remove('hide'); p.style.opacity = '1'; });
-      return;
-    }
-    // cap stagger so large sets don't accumulate huge delays
-    const toHide = hideItems.filter((p) => !p.classList.contains('hide'));
-    animate(toHide, {
-      opacity: [1, 0], scale: [1, 0.96], duration: 180, delay: (_, i) => Math.min(i, 24) * 12, ease: 'outQuad',
-      onComplete: () => hideItems.forEach((p) => p.classList.add('hide')),
-    });
-    showItems.forEach((p) => p.classList.remove('hide'));
-    animate(showItems, { opacity: [0, 1], scale: [0.96, 1], duration: 320, delay: (_, i) => Math.min(i, 24) * 18, ease: 'outQuart' });
-  }
+    if (shown.length < BATCH) revealMore(BATCH - shown.length);
+    enter(shown.slice(0, 24));
+    updateMore();
+    const bar = document.getElementById('filter-bar')!;
+    if (bar.getBoundingClientRect().top > 70) return;
+    window.scrollTo({ top: document.getElementById('gal')!.offsetTop - 140, behavior: reduce ? 'auto' : 'smooth' });
+  }));
 
-  // ===== Category nav =====
-  const catBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.cat-btn'));
-  catBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      catBtns.forEach((b) => b.classList.toggle('active', b === btn));
-      filterGallery(btn.dataset.cat || 'todas');
-    });
-  });
+  tiles.forEach((t) => t.addEventListener('click', () => {
+    const list = tiles.filter((x) => !x.classList.contains('hide') && !pending(x));
+    const sub = list.map((x) => items[Number(x.dataset.i)]);
+    window.dispatchEvent(new CustomEvent('lb:open', { detail: { items: sub, index: list.indexOf(t), opener: t } }));
+  }));
 
-  // ===== Lightbox =====
-  const lb = document.getElementById('lightbox')!;
-  const lbImg = document.getElementById('lb-img') as HTMLImageElement;
-  const lbPh = document.getElementById('lb-ph')!;
-  const lbStage = document.getElementById('lb-stage')!;
-  const lbMeta = document.getElementById('lb-meta')!;
-  const lbCount = document.getElementById('lb-count')!;
-  let view: HTMLElement[] = [];
-  let pos = 0;
-  // Only photos actually on screen — not filtered out, not still pending.
-  const visible = () => photos.filter((p) => !p.classList.contains('hide') && !isPending(p));
-
-  function showAt(i: number) {
-    if (view.length === 0) return;
-    pos = (i + view.length) % view.length;
-    const it = view[pos];
-    const img = it.querySelector('img');
-    const cat = it.querySelector('.photo-cat')?.getAttribute('data-label') || '';
-    const full = img ? ((img as HTMLImageElement).getAttribute('src') || (img as HTMLElement).dataset.src) : null;
-    if (full) { lbImg.src = full; lbImg.style.display = 'block'; lbPh.style.display = 'none'; }
-    else { lbImg.style.display = 'none'; lbPh.style.display = 'flex'; }
-    lbMeta.textContent = cat.toUpperCase();
-    lbCount.textContent = `${pos + 1} / ${view.length}`;
-    if (!reduce) animate(lbStage, { opacity: [0, 1], scale: [0.95, 1], duration: 280, ease: 'outQuart' });
-  }
-  function openLb(it: HTMLElement) {
-    view = visible(); pos = view.indexOf(it);
-    lb.classList.add('open'); lb.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
-    if (!reduce) animate(lb, { opacity: [0, 1], duration: 280, ease: 'outQuart' }); else lb.style.opacity = '1';
-    showAt(pos);
-  }
-  function closeLb() {
-    const done = () => { lb.classList.remove('open'); lb.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; };
-    if (reduce) { done(); return; }
-    animate(lb, { opacity: 0, duration: 200, ease: 'outQuart', onComplete: done });
-  }
-  photos.forEach((p) => p.addEventListener('click', () => openLb(p)));
-
-  updateMoreBtn();
-  document.getElementById('lb-close')!.addEventListener('click', closeLb);
-  document.getElementById('lb-prev')!.addEventListener('click', () => showAt(pos - 1));
-  document.getElementById('lb-next')!.addEventListener('click', () => showAt(pos + 1));
-  lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
-  window.addEventListener('keydown', (e) => {
-    if (!lb.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLb();
-    if (e.key === 'ArrowLeft') showAt(pos - 1);
-    if (e.key === 'ArrowRight') showAt(pos + 1);
-  });
-  let tx = 0;
-  lb.addEventListener('touchstart', (e) => (tx = e.changedTouches[0].clientX), { passive: true });
-  lb.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) showAt(dx > 0 ? pos - 1 : pos + 1); }, { passive: true });
+  updateMore();
+  // /portfolio#natacion opens straight on that zone (links from About).
+  zoneBtns.find((b) => location.hash && b.dataset.cat === decodeURIComponent(location.hash.slice(1)))?.click();
 </script>

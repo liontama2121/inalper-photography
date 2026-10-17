@@ -2,13 +2,15 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import Shutter from '../components/Shutter.astro';
 import { WA_LINK } from '../lib/contact.js';
 
 const {
-  title = 'IPEREZPHOTO — Sports Photography',
-  description = 'Sports photography by Inaldo Pérez. Published by AFP, El Tiempo, Caracol TV, RCN and El Heraldo. Bogota, Colombia.',
+  title = 'Inaldo Pérez | Sports Photographer',
+  description = 'Sports photography by Inaldo Pérez. Published by AFP, El Tiempo, Caracol TV, RCN and El Heraldo. Bogotá, Colombia.',
   active = '',
-  transparentNav = false,
+  ogImage = '/IPEREZLOGO.png',
 } = Astro.props;
 ---
 
@@ -18,6 +20,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0b0b0c" />
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -26,66 +29,68 @@ const {
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/IPEREZLOGO.png" />
+    <meta property="og:image" content={ogImage} />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Martian+Mono:wdth,wght@87.5,500&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      // Hide reveal targets only when JS runs and motion is allowed.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js-reveal');
+        // Came through the page shutter: paint closed, Shutter.astro opens it.
+        try { if (sessionStorage.getItem('shutter')) { sessionStorage.removeItem('shutter'); document.documentElement.classList.add('shutter-closed'); setTimeout(() => document.documentElement.classList.remove('shutter-closed'), 2500); } } catch {}
+      }
+    </script>
   </head>
 
   <body>
-    <Nav active={active} transparent={transparentNav} />
+    <Nav active={active} />
 
     <slot />
 
     <Footer />
 
-    <!-- Custom cursor (desktop) -->
-    <div id="cursor-dot"></div>
-    <div id="cursor-ring"></div>
+    <Shutter />
 
-    <!-- Floating WhatsApp -->
-    <a id="wa-float" href={WA_LINK} target="_blank" rel="noopener" aria-label="Message on WhatsApp">
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
-        <path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.5 0 12.067 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.987-1.227zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-      </svg>
+    <a id="wa-float" href={WA_LINK} target="_blank" rel="noopener" aria-label="Hire Inaldo on WhatsApp">
+      <Icon name="whatsapp" />
     </a>
 
     <script>
-      // ---- Custom cursor ----
-      const dot = document.getElementById('cursor-dot');
-      const ring = document.getElementById('cursor-ring');
-      if (dot && ring && window.matchMedia('(pointer: fine)').matches) {
-        let mx = 0, my = 0, rx = 0, ry = 0;
-        window.addEventListener('mousemove', (e) => {
-          mx = e.clientX; my = e.clientY;
-          dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
-        });
-        const loop = () => {
-          rx += (mx - rx) * 0.2;
-          ry += (my - ry) * 0.2;
-          ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
-          requestAnimationFrame(loop);
-        };
-        loop();
-        document.addEventListener('mouseover', (e) => {
-          if ((e.target as HTMLElement).closest('.photo-item, a, button')) ring.classList.add('active');
-        });
-        document.addEventListener('mouseout', (e) => {
-          if ((e.target as HTMLElement).closest('.photo-item, a, button')) ring.classList.remove('active');
-        });
-      }
+      import { animate, stagger } from 'animejs';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // ---- WhatsApp float ----
-      setTimeout(() => document.getElementById('wa-float')?.classList.add('visible'), 1500);
+      // ---- Floating WhatsApp: hidden while an on-page hire CTA is visible ----
+      const wa = document.getElementById('wa-float')!;
+      const hires = document.querySelectorAll('[data-hire]');
+      const onScreen = new Set<Element>();
+      let shown = false;
+      const setWa = (show: boolean) => {
+        if (show === shown) return;
+        shown = show;
+        wa.classList.toggle('visible', show);
+        if (reduce) { wa.style.opacity = show ? '1' : '0'; return; }
+        animate(wa, show
+          ? { opacity: [0, 1], translateY: [16, 0], duration: 420, ease: 'outExpo' }
+          : { opacity: 0, translateY: 16, duration: 220, ease: 'outQuad' });
+      };
+      const hireIo = new IntersectionObserver((entries) => {
+        entries.forEach((e) => (e.isIntersecting ? onScreen.add(e.target) : onScreen.delete(e.target)));
+        setWa(onScreen.size === 0);
+      });
+      setTimeout(() => {
+        if (hires.length) hires.forEach((h) => hireIo.observe(h));
+        else setWa(true);
+      }, 1200);
 
-      // ---- Global scroll-reveal ----
-      import('animejs').then(({ animate, stagger }) => {
+      // ---- Global scroll-reveal, grouped so siblings stagger together ----
+      if (!reduce) {
         const els = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
         const groups = new Map<Element, HTMLElement[]>();
         els.forEach((el) => {
@@ -97,13 +102,13 @@ const {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             animate(groups.get(entry.target) || [], {
-              translateY: [28, 0], opacity: [0, 1], duration: 700, ease: 'outQuart', delay: stagger(80),
+              translateY: [32, 0], opacity: [0, 1], duration: 900, ease: 'outExpo', delay: stagger(70),
             });
             io.unobserve(entry.target);
           });
-        }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
         groups.forEach((_, key) => io.observe(key));
-      });
+      }
     </script>
   </body>
 </html>

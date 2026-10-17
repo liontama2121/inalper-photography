@@ -21,35 +21,41 @@
 ## Estructura
 ```
 src/
-  layouts/Layout.astro       ← head, fuentes, Nav, Footer, botón flotante WA, scroll-reveal global
+  layouts/Layout.astro       ← head, fuentes (Archivo + Martian Mono), Nav, Footer, WA flotante, scroll-reveal
   components/
-    Nav.astro
-    Footer.astro
-    CameraHud.astro          ← hero del home: visor de cámara en SVG + HUD animado
+    Nav.astro / Footer.astro
+    PressWall.astro          ← hero del home: muro arrastrable con TODAS las fotos + ráfaga + punto AF
+    ZoneRow.astro            ← fila única de disciplinas (código de zona + conteo), nunca hace wrap
+    Lightbox.astro           ← visor compartido; se abre con evento 'lb:open'
+    Icon.astro               ← íconos Phosphor (bold) inline
+    Shutter.astro            ← obturador de plano focal (entre páginas y en el visor): window.shutter.fire()
   pages/
-    index.astro              ← home (solo monta CameraHud)
-    portafolio.astro         ← escanea public/photos/ en build + filtros + lightbox
-    sobre-mi.astro
-    contacto.astro
-    blog/index.astro
-    blog/[slug].astro
+    index.astro              ← muro + prensa + acreditaciones + cierre rojo
+    portfolio.astro          ← filtros por zona + masonry + "Load more"; acepta /portfolio#<categoria>
+    about.astro / contact.astro / blog/
   lib/
+    photos.js                ← escanea public/photos/ en build; ZONES = etiqueta + código por categoría
+    credentials.js           ← prensa y eventos reales (no inventar)
     contact.js               ← fuente única de teléfono, email, redes, link de WA
-    posts.js                 ← data del blog
-  styles/global.css          ← custom properties, tipografía, #wa-float
-public/
-  photos/[categoria]/*.jpg   ← las fotos reales
-  IPEREZLOGO.png
+  styles/global.css          ← tokens (negro/rojo Canon), tipografía, botones
+scripts/thumbs.mjs           ← genera public/thumbs/{sm,md}/ (WebP 320/640) + manifest con medidas y EXIF real
+public/photos/[categoria]/*.jpg
+PRODUCT.md / DESIGN.md       ← contexto de producto y sistema visual (impeccable)
 legacy-next/                 ← prototipo Next.js viejo, no se despliega
 ```
 
 ## Fotos
-- `portafolio.astro` lee `public/photos/` con `fs.readdirSync` en build time.
-  Agregar una foto = copiarla a la carpeta de su categoría. No hay lista hardcodeada.
-- Nombre de carpeta = slug de categoría; las etiquetas bonitas están en `LABELS`.
+- `photos.js` lee `public/photos/` en build. Agregar foto = copiarla a su carpeta.
+- `npm run dev` / `npm run build` corren `scripts/thumbs.mjs` antes (predev/prebuild).
+  `public/thumbs/` y el manifest son generados y están en .gitignore.
+- Categoría nueva: agregarla a `ZONES` en `src/lib/photos.js` (etiqueta + código de 3 letras).
 - **Máximo 25 MiB por archivo** (límite duro de Cloudflare Pages). Las fotos van
-  redimensionadas a 2560px de lado largo, calidad 85. Fotos nuevas que vengan
-  directo de cámara hay que bajarlas antes de commitear.
+  redimensionadas a 2560px de lado largo, calidad 85.
+
+## Diseño
+- Negro/rojo Canon: `--ink #0b0b0c`, `--red #cc0000`. Rojo como campo sólido con texto blanco, no como texto chico.
+- Esquinas rectas en todo. Sin cursor custom, sin em-dashes en copy.
+- Un solo CTA de contratación: "Hire Inaldo" (WhatsApp).
 
 ## Categorías
 rugby, atletismo, natacion, taekwondo, gimnasia, surf, ciclismo, boxeo,

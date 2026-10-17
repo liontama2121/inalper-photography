@@ -7,10 +7,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "thumbs": "node scripts/thumbs.mjs",
+    "predev": "node scripts/thumbs.mjs",
+    "prebuild": "node scripts/thumbs.mjs"
   },
   "dependencies": {
+    "@phosphor-icons/core": "^2.1.1",
+    "animejs": "^4.4.1",
     "astro": "^6.4.7",
-    "animejs": "^4.4.1"
+    "exif-reader": "^2.0.3",
+    "sharp": "^0.34.5"
   }
 }

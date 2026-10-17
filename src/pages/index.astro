@@ -1,8 +1,89 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import CameraHud from '../components/CameraHud.astro';
+import PressWall from '../components/PressWall.astro';
+import Lightbox from '../components/Lightbox.astro';
+import Icon from '../components/Icon.astro';
+import { PRESS, EVENTS } from '../lib/credentials.js';
+import { WA_LINK } from '../lib/contact.js';
+import { photos, zones } from '../lib/photos.js';
 ---
 
-<Layout title="IPEREZPHOTO — Sports Photography" transparentNav={true}>
-  <CameraHud />
+<Layout title="Inaldo Pérez | Sports Photographer, Bogotá">
+  <main>
+    <PressWall />
+
+    <section id="press" class="wrap reveal-group" aria-labelledby="press-h">
+      <h2 id="press-h" class="sr-only">Published by</h2>
+      <p class="press-names reveal">
+        {PRESS.map((name, i) => (
+          <span class={i % 2 ? 'wide' : 'tall'}>{name}</span>
+        ))}
+      </p>
+    </section>
+
+    <section id="accred" class="wrap" aria-labelledby="accred-h">
+      <h2 id="accred-h" class="code-type accred-h reveal">Accredited at</h2>
+      <ol class="access reveal-group">
+        {EVENTS.map((e) => (
+          <li class="access-row reveal">
+            <span class="a-code code-type">{e.code}</span>
+            <h3 class="a-title bib-type">{e.title}</h3>
+            <p class="a-desc">{e.desc}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="accred-foot reveal">
+        <span class="data">{photos.length} frames across {zones.length} zones on this site.</span>
+        <a href="/portfolio" class="a-link">Open the portfolio <Icon name="arrow" size={16} /></a>
+      </p>
+    </section>
+
+    <section id="close" data-hire aria-labelledby="close-h">
+      <div class="wrap close-in reveal-group">
+        <h2 id="close-h" class="bib-type reveal">Need the shot?</h2>
+        <p class="reveal">Sports assignments, events and editorial work. Message Inaldo directly.</p>
+        <a class="btn btn-ink reveal" href={WA_LINK} target="_blank" rel="noopener"><Icon name="whatsapp" />Hire Inaldo</a>
+      </div>
+    </section>
+  </main>
+
+  <Lightbox />
 </Layout>
+
+<style>
+  /* ===== Press: names set like telop captions, width alternating ===== */
+  #press { padding-top: clamp(96px, 12vw, 160px); padding-bottom: clamp(64px, 8vw, 112px); }
+  .press-names { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.06em 0.3em; margin: 0; line-height: 0.95; text-transform: uppercase; font-weight: 900; font-size: clamp(44px, 8.4vw, 132px); }
+  .press-names span { white-space: nowrap; }
+  .press-names .tall { font-stretch: 62%; }
+  .press-names .wide { font-stretch: 125%; color: var(--fg-2); }
+
+  /* ===== Accreditation: access rows ===== */
+  #accred { padding-bottom: clamp(96px, 12vw, 160px); }
+  .accred-h { font-size: clamp(64px, 12vw, 180px); color: var(--fg); margin-bottom: 32px; }
+  .access { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--fg); }
+  .access-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.7fr) 2fr 1.6fr;
+    gap: 24px;
+    align-items: center;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .a-code { display: inline-block; justify-self: start; padding: 8px 12px 2px; background: var(--red); color: var(--on-red); font-size: clamp(36px, 4vw, 56px); }
+  .a-title { font-size: clamp(22px, 2.6vw, 36px); }
+  .a-desc { margin: 0; color: var(--fg-2); max-width: 46ch; }
+  .accred-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin: 28px 0 0; color: var(--fg-2); }
+  .a-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; text-transform: uppercase; font-stretch: 112%; text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+  .a-link:hover { color: var(--fg); }
+
+  /* ===== Close: the bib field, full width ===== */
+  #close { background: var(--red); color: var(--on-red); }
+  .close-in { padding-top: clamp(80px, 10vw, 140px); padding-bottom: clamp(80px, 10vw, 140px); }
+  #close h2 { font-size: clamp(48px, 9vw, 140px); }
+  #close p { margin: 20px 0 32px; max-width: 44ch; font-size: clamp(17px, 1.5vw, 20px); color: #ffe5e3; }
+
+  @media (max-width: 768px) {
+    .access-row { grid-template-columns: 1fr; gap: 12px; padding: 24px 0; }
+  }
+</style>

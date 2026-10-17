@@ -1,46 +1,66 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import {
-  EMAIL, MAIL_LINK, INSTAGRAM, INSTAGRAM_URL, PHONE_DISPLAY, WA_LINK,
-} from '../lib/contact.js';
+import Icon from '../components/Icon.astro';
+import { EMAIL, MAIL_LINK, INSTAGRAM, INSTAGRAM_URL, PHONE_DISPLAY, WA_LINK } from '../lib/contact.js';
 
-const blocks = [
-  { tag: 'Email', value: EMAIL, href: MAIL_LINK },
-  { tag: 'Instagram', value: INSTAGRAM, href: INSTAGRAM_URL },
-  { tag: 'WhatsApp', value: PHONE_DISPLAY, href: WA_LINK },
+const channels = [
+  { icon: 'whatsapp', tag: 'WhatsApp', note: 'Fastest reply', value: PHONE_DISPLAY, href: WA_LINK, primary: true },
+  { icon: 'envelope', tag: 'Email', note: 'Briefs and attachments', value: EMAIL, href: MAIL_LINK },
+  { icon: 'instagram', tag: 'Instagram', note: 'Latest work', value: INSTAGRAM, href: INSTAGRAM_URL },
 ];
 ---
 
-<Layout title="Contact — IPEREZPHOTO" active="contact">
+<Layout title="Contact | Hire Inaldo Pérez, Sports Photographer" active="contact">
   <main id="contact">
-    <div class="page-head reveal-group" style="text-align:center">
-      <p class="eyebrow reveal" style="display:inline-block">// Contact</p>
-      <h1 class="h-display reveal">LET'S WORK TOGETHER</h1>
-      <p class="sub reveal">Available for sports assignments, events and editorial projects.</p>
-    </div>
+    <header class="wrap page-head reveal-group">
+      <h1 class="bib-type reveal">Hire Inaldo</h1>
+      <p class="lede reveal">Available for sports assignments, events and editorial projects.</p>
+    </header>
 
-    <section class="c-grid reveal-group">
-      {blocks.map((b) => (
-        <a class="c-cell reveal" href={b.href} target="_blank" rel="noopener">
-          <span class="c-tag mono">{b.tag}</span>
-          <span class="c-val">{b.value}</span>
-        </a>
+    <ul class="wrap channels reveal-group">
+      {channels.map((c) => (
+        <li class="reveal">
+          <a class={`ch${c.primary ? ' primary' : ''}`} href={c.href} target={c.href.startsWith('mailto') ? undefined : '_blank'} rel="noopener" data-hire={c.primary ? '' : undefined}>
+            <Icon name={c.icon} class="ch-ico" />
+            <span class="ch-tag">{c.tag}<span class="ch-note">{c.note}</span></span>
+            <span class="ch-val">{c.value}</span>
+            <Icon name="arrow" class="ch-go" />
+          </a>
+        </li>
       ))}
-    </section>
+    </ul>
   </main>
 </Layout>
 
 <style>
-  #contact { min-height: 70vh; padding-bottom: 120px; }
-  .sub { font-size: 16px; font-weight: 300; color: var(--muted); margin: 18px 0 0; }
-  .c-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; max-width: 1080px; margin: 48px auto 0; padding: 0 40px; }
-  .c-cell { display: flex; flex-direction: column; gap: 12px; padding: 56px 48px; border: 1px solid var(--border); transition: border-color 0.3s ease; }
-  .c-cell:hover { border-color: var(--accent); }
-  .c-tag { font-size: 9px; letter-spacing: 0.25em; color: #333; }
-  .c-val { font-size: 15px; font-weight: 300; color: #fff; transition: color 0.25s ease; }
-  .c-cell:hover .c-val { color: var(--accent); }
-  @media (max-width: 768px) {
-    .c-grid { grid-template-columns: 1fr; padding: 0 16px; }
-    .c-cell { padding: 36px 28px; }
+  #contact { padding-bottom: clamp(96px, 12vw, 160px); }
+  .channels { list-style: none; margin-top: 8px; margin-bottom: 0; display: grid; gap: 4px; }
+  .ch {
+    display: grid;
+    grid-template-columns: 56px 220px 1fr 40px;
+    align-items: center;
+    gap: 24px;
+    padding: 32px 28px;
+    background: var(--panel);
+    transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out);
+  }
+  .ch.primary { background: var(--red); color: var(--on-red); padding-top: 48px; padding-bottom: 48px; }
+  .ch:hover { background: var(--panel-2); }
+  .ch.primary:hover { background: var(--red-hi); }
+  :global(.ch-ico) { width: 40px; height: 40px; }
+  .ch-tag { display: grid; gap: 4px; font-weight: 800; font-stretch: 112%; text-transform: uppercase; font-size: 18px; }
+  .ch-note { font-weight: 500; font-stretch: 100%; text-transform: none; font-size: 14px; color: var(--fg-2); }
+  .ch.primary .ch-note { color: #ffe5e3; }
+  .ch-val { font-weight: 900; font-stretch: 62%; text-transform: uppercase; font-size: clamp(32px, 5vw, 72px); line-height: 1; overflow-wrap: anywhere; }
+  .ch:not(.primary) .ch-val { text-transform: none; font-stretch: 75%; }
+  :global(.ch-go) { width: 32px; height: 32px; justify-self: end; transition: transform 0.3s var(--ease-out); }
+  .ch:hover :global(.ch-go) { transform: translate(4px, -4px); }
+
+  @media (max-width: 900px) {
+    .ch { grid-template-columns: 40px 1fr 28px; gap: 8px 16px; padding: 24px 20px; }
+    .ch.primary { padding-top: 32px; padding-bottom: 32px; }
+    :global(.ch-ico) { width: 32px; height: 32px; }
+    .ch-val { grid-column: 1 / -1; grid-row: 2; font-size: clamp(28px, 8.5vw, 44px); }
+    :global(.ch-go) { grid-column: 3; grid-row: 1; width: 24px; height: 24px; }
   }
 </style>

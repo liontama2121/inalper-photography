@@ -1,0 +1,463 @@
+---
+// Home first viewport: every photo on one draggable wall, filled in a
+// burst sequence; an AF point tracks the frame you look at; the zone row
+// jumps the wall to a discipline. Thumbnails load only near the viewport.
+import Icon from './Icon.astro';
+import ZoneRow from './ZoneRow.astro';
+import { photos, zones } from '../lib/photos.js';
+import { WA_LINK } from '../lib/contact.js';
+
+const leads = new Set(zones.map((z) => photos.findIndex((p) => p.cat === z.cat)));
+const items = photos.map((p) => ({ src: p.src, label: p.label, code: p.code, n: p.n, of: p.of, caption: p.caption, shot: p.shot }));
+---
+
+<section id="wall" aria-label="Every photograph, by discipline">
+  <div id="wall-stage">
+    <div id="wall-track">
+      {photos.map((p, i) => (
+        <button
+          class={`cell${leads.has(i) ? ' lead' : ''}`}
+          data-i={i}
+          data-cat={p.cat}
+          tabindex={i === 0 ? 0 : -1}
+          aria-label={`${p.label}, frame ${p.n} of ${p.of}`}
+        >
+          <img data-src={leads.has(i) ? p.md : p.sm} alt="" width={p.w} height={p.h} decoding="async" draggable="false" />
+        </button>
+      ))}
+      <span id="af-box" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    </div>
+    <div id="vf" class="data" aria-hidden="true">
+      <span id="vf-code">ALL</span>
+      <span><b id="vf-ss">--</b></span>
+      <span><b id="vf-f">--</b></span>
+      <span><i>ISO</i><b id="vf-iso">--</b></span>
+      <span class="vf-mm"><b id="vf-mm">--</b></span>
+    </div>
+    <p id="wall-hint"><Icon name="hand" size={16} /><span id="hint-t">Drag to explore</span></p>
+  </div>
+
+  <div id="bib" data-hire>
+    <p class="bib-photo bib-type">Photo</p>
+    <div class="bib-body">
+      <h1 class="bib-type">Inaldo<br />Pérez</h1>
+      <p class="bib-sub">Sports photographer in Bogotá. Published by AFP, El Tiempo, Caracol TV, RCN and El Heraldo.</p>
+      <div class="bib-cta">
+        <a class="btn btn-red" href={WA_LINK} target="_blank" rel="noopener"><Icon name="whatsapp" />Hire Inaldo</a>
+        <a class="btn btn-line" href="/portfolio">Portfolio</a>
+      </div>
+    </div>
+  </div>
+
+  <ZoneRow id="zone-row" zones={zones} total={photos.length} label="Jump to a discipline" />
+
+  <script type="application/json" id="wall-items" set:html={JSON.stringify(items)} />
+</section>
+
+<style>
+  #wall {
+    position: relative;
+    height: 100dvh;
+    min-height: 600px;
+    padding-top: var(--nav-h);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    background: var(--ink);
+  }
+
+  /* ===== Stage + track ===== */
+  #wall-stage { position: relative; overflow: hidden; touch-action: none; cursor: grab; user-select: none; }
+  #wall-stage.dragging { cursor: grabbing; }
+  @media (pointer: coarse) { #wall-stage { touch-action: pan-y; } }
+
+  #wall-track {
+    --cw: 168px;
+    --ch: 126px;
+    --gap: 4px;
+    position: absolute;
+    top: 0; left: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 32), var(--cw));
+    grid-auto-rows: var(--ch);
+    grid-auto-flow: row dense;
+    gap: var(--gap);
+    padding: var(--gap);
+    will-change: transform;
+  }
+  #wall-track.flow-col {
+    grid-template-columns: none;
+    grid-auto-columns: var(--cw);
+    grid-template-rows: repeat(var(--rows, 4), var(--ch));
+    grid-auto-flow: column dense;
+  }
+
+  .cell {
+    position: relative;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: var(--panel);
+    cursor: inherit;
+    transition: opacity 0.35s var(--ease-out), filter 0.35s var(--ease-out);
+  }
+  .cell.lead { grid-column: span 2; grid-row: span 2; }
+  .cell img { width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; }
+  .cell.dim { opacity: 0.14; filter: grayscale(1); }
+  .cell:focus-visible { outline: 2px solid var(--fg); outline-offset: -2px; z-index: 1; }
+
+  /* AF point: four red corner brackets riding the track */
+  #af-box { position: absolute; top: 0; left: 0; pointer-events: none; opacity: 0; z-index: 2; }
+  #af-box i { position: absolute; width: 18px; height: 18px; border: 0 solid var(--red); }
+  #af-box i:nth-child(1) { top: -5px; left: -5px; border-width: 3px 0 0 3px; }
+  #af-box i:nth-child(2) { top: -5px; right: -5px; border-width: 3px 3px 0 0; }
+  #af-box i:nth-child(3) { bottom: -5px; left: -5px; border-width: 0 0 3px 3px; }
+  #af-box i:nth-child(4) { bottom: -5px; right: -5px; border-width: 0 3px 3px 0; }
+
+  /* Viewfinder readout: the focused frame's real exposure */
+  #vf {
+    position: absolute;
+    top: 16px; left: 16px;
+    z-index: var(--z-wall-ui);
+    display: flex; align-items: stretch;
+    background: rgba(11, 11, 12, 0.88);
+    color: var(--fg);
+    pointer-events: none;
+    font-size: 13px;
+  }
+  #vf span { display: flex; align-items: center; gap: 4px; padding: 8px 12px; border-right: 1px solid var(--line); white-space: nowrap; }
+  #vf span:last-child { border-right: 0; }
+  #vf i { font-style: normal; font-size: 10px; color: var(--fg-3); }
+  #vf b { font-weight: 500; }
+  #vf-code { background: var(--red); color: var(--on-red); font-family: var(--font); font-weight: 900; font-stretch: 62%; font-size: 20px; line-height: 1; }
+
+  #wall-hint {
+    position: absolute;
+    top: 16px; right: 16px;
+    z-index: var(--z-wall-ui);
+    display: flex; align-items: center; gap: 8px;
+    margin: 0;
+    padding: 8px 12px;
+    background: rgba(11, 11, 12, 0.86);
+    color: var(--fg);
+    pointer-events: none;
+  }
+
+  /* ===== Bib ===== */
+  #bib {
+    position: absolute;
+    left: var(--gutter);
+    bottom: calc(76px + 24px);
+    z-index: var(--z-wall-ui);
+    width: min(540px, calc(100% - 2 * var(--gutter)));
+    background: var(--ink);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  }
+  .bib-photo {
+    padding: 14px 24px 8px;
+    background: var(--red);
+    color: var(--on-red);
+    font-size: clamp(40px, 4.4vw, 64px);
+    letter-spacing: 0.04em;
+  }
+  .bib-body { padding: 24px 24px 26px; }
+  #bib h1 { font-size: clamp(40px, 4.6vw, 68px); }
+  .bib-sub { margin: 16px 0 22px; max-width: 40ch; color: var(--fg-2); font-size: 16px; }
+  .bib-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  #wall :global(#zone-row) { border-bottom: 0; }
+
+  /* ===== Phone: wall on top, bib below ===== */
+  @media (max-width: 768px) {
+    #wall { min-height: 560px; }
+    #wall-track { --cw: 112px; --ch: 84px; --gap: 3px; }
+    #bib { left: 0; right: 0; bottom: 64px; width: auto; box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.5); }
+    .bib-photo { padding: 8px 16px 2px; font-size: 30px; }
+    .bib-body { padding: 14px 16px 18px; }
+    #bib h1 { font-size: clamp(34px, 10vw, 56px); }
+    .bib-sub { margin: 10px 0 14px; font-size: 15px; }
+    #wall-hint { top: auto; bottom: 12px; right: 12px; display: none; }
+    #vf { top: 8px; left: 8px; font-size: 11px; }
+    #vf span { padding: 6px 8px; }
+    #vf-code { font-size: 16px; }
+    .vf-mm { display: none !important; }
+  }
+</style>
+
+<script>
+  import { animate } from 'animejs';
+
+  type Shot = { ss?: string; f?: number; iso?: number; mm?: number };
+  type Item = { src: string; label: string; code: string; n: number; of: number; shot?: Shot | null };
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  const stage = document.getElementById('wall-stage')!;
+  const track = document.getElementById('wall-track')!;
+  const af = document.getElementById('af-box')!;
+  const hint = document.getElementById('wall-hint')!;
+  if (!window.matchMedia('(pointer: fine)').matches) document.getElementById('hint-t')!.textContent = 'Swipe to explore';
+  const allN = document.querySelector<HTMLElement>('#zone-row [data-all-n]')!;
+  const cells = Array.from(track.querySelectorAll<HTMLButtonElement>('.cell'));
+  const items: Item[] = JSON.parse(document.getElementById('wall-items')!.textContent || '[]');
+  const zoneBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('#zone-row .zone'));
+
+  // ===== Layout: wide wall on desktop, a horizontal strip on phones =====
+  const state = { x: 0, y: 0 };
+  let minX = 0, minY = 0;
+  let stripMode = false;
+
+  function layout() {
+    stripMode = window.innerWidth <= 768 || !fine;
+    const cs = getComputedStyle(track);
+    const ch = parseFloat(cs.getPropertyValue('--ch'));
+    const gap = parseFloat(cs.getPropertyValue('--gap'));
+    track.classList.toggle('flow-col', stripMode);
+    if (stripMode) {
+      // Fit whole rows to the stage height exactly, cells keep 4:3.
+      track.style.removeProperty('--ch');
+      track.style.removeProperty('--cw');
+      const baseCh = parseFloat(getComputedStyle(track).getPropertyValue('--ch')) || ch;
+      const rows = Math.max(3, Math.floor((stage.clientHeight - gap) / (baseCh + gap)));
+      const fitCh = (stage.clientHeight - gap * (rows + 1)) / rows;
+      track.style.setProperty('--rows', String(rows));
+      track.style.setProperty('--ch', `${fitCh}px`);
+      track.style.setProperty('--cw', `${(fitCh * 4) / 3}px`);
+    } else {
+      // unit cells (leads take 4) spread over a ~16:9 wall
+      const units = cells.length + document.querySelectorAll('.cell.lead').length * 3;
+      track.style.setProperty('--cols', String(Math.ceil(Math.sqrt(units * 2.1))));
+    }
+    minX = Math.min(0, stage.clientWidth - track.offsetWidth);
+    minY = Math.min(0, stage.clientHeight - track.offsetHeight);
+  }
+
+  const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+  function apply() {
+    state.x = clamp(state.x, minX, 0);
+    state.y = clamp(state.y, minY, 0);
+    track.style.transform = `translate3d(${state.x}px, ${state.y}px, 0)`;
+  }
+  let glide: ReturnType<typeof animate> | null = null;
+  function panTo(x: number, y: number, duration = 900) {
+    glide?.pause();
+    const tx = clamp(x, minX, 0), ty = clamp(y, minY, 0);
+    if (reduce || duration === 0) { state.x = tx; state.y = ty; apply(); return; }
+    glide = animate(state, { x: tx, y: ty, duration, ease: 'outExpo', onUpdate: apply });
+  }
+  // Bring a cell to the visual centre of the stage.
+  const centreOn = (c: HTMLElement, duration?: number) =>
+    panTo(stage.clientWidth / 2 - (c.offsetLeft + c.offsetWidth / 2), stage.clientHeight / 2 - (c.offsetTop + c.offsetHeight / 2), duration);
+
+  // ===== Lazy thumbnails: only cells near the stage get a src =====
+  const lazy = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const img = (e.target as HTMLElement).querySelector('img')!;
+      lazy.unobserve(e.target);
+      if (img.src) return;
+      img.onload = () => {
+        if (reduce || img.dataset.burst) { img.style.opacity = '1'; return; }
+        animate(img, { opacity: [0, 1], duration: 500, ease: 'outQuad' });
+      };
+      img.src = img.dataset.src!;
+    });
+  }, { root: stage, rootMargin: '240px' });
+
+  // ===== Viewfinder readout =====
+  const vf = {
+    code: document.getElementById('vf-code')!, ss: document.getElementById('vf-ss')!,
+    f: document.getElementById('vf-f')!, iso: document.getElementById('vf-iso')!, mm: document.getElementById('vf-mm')!,
+  };
+  function readout(c: HTMLElement) {
+    const it = items[Number(c.dataset.i)];
+    const s = it?.shot || {};
+    vf.code.textContent = it?.code || 'ALL';
+    vf.ss.textContent = s.ss || '--';
+    vf.f.textContent = s.f ? `f/${s.f}` : '--';
+    vf.iso.textContent = s.iso ? String(s.iso) : '--';
+    vf.mm.textContent = s.mm ? `${s.mm}mm` : '--';
+  }
+
+  // ===== AF point: hunts white, locks red =====
+  const brackets = af.querySelectorAll<HTMLElement>('i');
+  let afOn: HTMLElement | null = null;
+  function moveAf(c: HTMLElement, snap = false) {
+    if (afOn === c) return;
+    afOn = c;
+    readout(c);
+    const box = { left: c.offsetLeft, top: c.offsetTop, width: c.offsetWidth, height: c.offsetHeight };
+    if (reduce || snap) { Object.assign(af.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px`, opacity: '1' }); return; }
+    animate(af, { left: box.left, top: box.top, width: box.width, height: box.height, opacity: 1, duration: 300, ease: 'outExpo' });
+    animate(af, { scale: [1.14, 0.97, 1], duration: 360, ease: 'outQuad' });
+    animate(brackets, { borderColor: ['#f4f4f2', '#cc0000'], delay: 240, duration: 90, ease: 'linear' });
+  }
+
+  // ===== Drag with inertia =====
+  let down = false, dragged = false, sx = 0, sy = 0, ox = 0, oy = 0;
+  let samples: { x: number; y: number; t: number }[] = [];
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    down = true; dragged = false;
+    sx = e.clientX; sy = e.clientY; ox = state.x; oy = state.y;
+    samples = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+    glide?.pause();
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!down) {
+      if (fine) { const c = (e.target as HTMLElement).closest<HTMLElement>('.cell'); if (c && !c.classList.contains('dim')) moveAf(c); }
+      return;
+    }
+    const dx = e.clientX - sx, dy = stripMode ? 0 : e.clientY - sy;
+    if (!dragged && Math.hypot(dx, dy) < 6) return;
+    if (!dragged) { dragged = true; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); dismissHint(); }
+    state.x = ox + dx; state.y = oy + dy; apply();
+    samples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+    if (samples.length > 5) samples.shift();
+  });
+  const release = () => {
+    if (!down) return;
+    down = false;
+    stage.classList.remove('dragging');
+    if (!dragged || samples.length < 2) return;
+    const a = samples[0], b = samples[samples.length - 1];
+    const dt = Math.max(16, b.t - a.t);
+    const vx = (b.x - a.x) / dt, vy = stripMode ? 0 : (b.y - a.y) / dt;
+    panTo(state.x + vx * 320, state.y + vy * 320, 1100);
+  };
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', () => { down = false; dragged = false; stage.classList.remove('dragging'); });
+
+  // Horizontal wheel / trackpad swipes pan the wall; vertical ones scroll the page.
+  stage.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    glide?.pause();
+    state.x -= e.deltaX; apply();
+    dismissHint();
+  }, { passive: false });
+
+  let hintGone = false;
+  function dismissHint() {
+    if (hintGone) return;
+    hintGone = true;
+    if (reduce) { hint.style.display = 'none'; return; }
+    animate(hint, { opacity: 0, duration: 300, ease: 'outQuad', onComplete: () => (hint.style.display = 'none') });
+  }
+
+  // ===== Zones =====
+  let zone = 'all';
+  const inZone = (c: HTMLElement) => zone === 'all' || c.dataset.cat === zone;
+  zoneBtns.forEach((btn) => btn.addEventListener('click', () => {
+    zone = btn.dataset.cat || 'all';
+    zoneBtns.forEach((b) => { const on = b === btn; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
+    cells.forEach((c) => c.classList.toggle('dim', !inZone(c)));
+    const first = cells.find(inZone);
+    if (first && zone !== 'all') {
+      panTo(48 - first.offsetLeft, stripMode ? 0 : 48 - first.offsetTop);
+      moveAf(first);
+    }
+    dismissHint();
+  }));
+
+  // ===== Open a frame =====
+  cells.forEach((c) => {
+    c.addEventListener('click', () => {
+      if (dragged) { dragged = false; return; }
+      const list = cells.filter(inZone);
+      const idx = list.indexOf(c);
+      if (idx === -1) return;
+      const sub = list.map((x) => items[Number(x.dataset.i)]);
+      // Half-press: AF locks on the frame, then the shutter fires into playback.
+      const wasOn = afOn === c;
+      moveAf(c);
+      const go = () => window.dispatchEvent(new CustomEvent('lb:open', { detail: { items: sub, index: idx, opener: c } }));
+      if (reduce) go(); else setTimeout(go, wasOn ? 60 : 340);
+    });
+    c.addEventListener('focus', () => { centreOn(c, 600); moveAf(c); });
+  });
+
+  // Arrow keys walk the wall geometrically (one tab stop for the whole wall).
+  track.addEventListener('keydown', (e) => {
+    const cur = document.activeElement as HTMLElement;
+    if (!cur?.classList.contains('cell')) return;
+    const keys: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const k = keys[e.key];
+    if (!k) return;
+    e.preventDefault();
+    const cx = cur.offsetLeft + cur.offsetWidth / 2, cy = cur.offsetTop + cur.offsetHeight / 2;
+    let best: HTMLElement | null = null, bestD = Infinity;
+    for (const c of cells) {
+      if (c === cur) continue;
+      const x = c.offsetLeft + c.offsetWidth / 2 - cx, y = c.offsetTop + c.offsetHeight / 2 - cy;
+      const along = x * k[0] + y * k[1];
+      if (along <= 4) continue;
+      const d = along + Math.abs(x * k[1] + y * k[0]) * 2;
+      if (d < bestD) { bestD = d; best = c; }
+    }
+    if (best) { cur.tabIndex = -1; best.tabIndex = 0; best.focus({ preventScroll: true }); }
+  });
+
+  // ===== Boot: layout, start position, burst =====
+  layout();
+  if (stripMode) state.x = 0;
+  else { state.x = (stage.clientWidth - track.offsetWidth) / 2; state.y = (stage.clientHeight - track.offsetHeight) / 2; }
+  apply();
+
+  function visibleCells() {
+    const sr = stage.getBoundingClientRect();
+    return cells.filter((c) => {
+      const r = c.getBoundingClientRect();
+      return r.right > sr.left && r.left < sr.right && r.bottom > sr.top && r.top < sr.bottom;
+    });
+  }
+  function nearestCentre(list: HTMLElement[]) {
+    const sr = stage.getBoundingClientRect();
+    const mx = sr.left + sr.width * (stripMode ? 0.5 : 0.62), my = sr.top + sr.height * 0.42;
+    const d = (c: HTMLElement) => { const r = c.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - mx, r.top + r.height / 2 - my); };
+    return [...list].sort((a, b) => d(a) - d(b));
+  }
+
+  const firstFrames = nearestCentre(visibleCells());
+  if (reduce) {
+    firstFrames.forEach((c) => { const img = c.querySelector('img')!; img.src = img.dataset.src!; img.style.opacity = '1'; });
+    cells.forEach((c) => lazy.observe(c));
+    if (firstFrames[0]) moveAf(firstFrames[0], true);
+  } else {
+    // Burst: frames land in rings out from the focus point, ~12 fps,
+    // each frame a hard cut like a sports body firing continuous shots.
+    const RING = Math.max(6, Math.ceil(firstFrames.length / 9));
+    const FPS = 85;
+    firstFrames.forEach((c, i) => {
+      const img = c.querySelector('img')!;
+      img.dataset.burst = '1';
+      img.src = img.dataset.src!;
+      const at = Math.floor(i / RING) * FPS;
+      animate(img, { opacity: [0, 1], scale: [1.12, 1], delay: at, duration: 260, ease: 'outExpo' });
+    });
+    const total = Math.ceil(firstFrames.length / RING) * FPS;
+    const counter = { n: 0 };
+    // Burst counter in the viewfinder, like a body's frame readout.
+    animate(counter, { n: items.length, duration: total, ease: 'linear', onUpdate: () => {
+      const n = String(Math.round(counter.n));
+      allN.textContent = n;
+      vf.code.textContent = `r${n}`;
+    } });
+    setTimeout(() => {
+      cells.forEach((c) => lazy.observe(c));
+      const focus = firstFrames[0];
+      if (!focus) return;
+      Object.assign(af.style, { left: `${focus.offsetLeft}px`, top: `${focus.offsetTop}px`, width: `${focus.offsetWidth}px`, height: `${focus.offsetHeight}px` });
+      afOn = focus;
+      readout(focus);
+      // AF lock: brackets close in, then confirm twice.
+      animate(af, { scale: [1.5, 1], opacity: [0, 1], duration: 380, ease: 'outExpo' });
+      animate(af, { opacity: [1, 0.25, 1, 0.25, 1], delay: 420, duration: 420, ease: 'linear' });
+    }, total + 80);
+    animate('#bib', { translateY: [28, 0], duration: 900, ease: 'outExpo' });
+  }
+
+  let rz = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(rz);
+    rz = requestAnimationFrame(() => { layout(); apply(); if (afOn) { const c = afOn; afOn = null; moveAf(c, true); } });
+  });
+</script>

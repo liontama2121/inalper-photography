@@ -33,3 +33,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated thumbnails (scripts/thumbs.mjs)
+public/thumbs/
+src/lib/photos.manifest.json
+
+# impeccable review captures
+.impeccable/review/

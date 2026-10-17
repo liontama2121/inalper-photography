@@ -1,0 +1,249 @@
+---
+// Shared full-size viewer, styled as a camera's playback screen.
+// Pages open it with:
+//   window.dispatchEvent(new CustomEvent('lb:open', { detail: { items, index, opener } }))
+// where items = [{ src, label, code, n, of, caption?, shot? }] and shot is the
+// real EXIF from scripts/thumbs.mjs ({ cam, lens, mm, ss, f, iso, date }).
+import Icon from './Icon.astro';
+import { WA_LINK } from '../lib/contact.js';
+---
+
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+  <figure id="lb-stage">
+    <img id="lb-img" alt="" hidden draggable="false" />
+    <span id="lb-zoom" class="data" aria-hidden="true">×2</span>
+  </figure>
+
+  <aside id="lb-rail">
+    <button id="lb-close" class="lb-btn" aria-label="Close viewer"><Icon name="x" size={22} /></button>
+    <div class="lb-id">
+      <p id="lb-code" class="code-type">SWM</p>
+      <div class="lb-name">
+        <p id="lb-label" class="bib-type">Swimming</p>
+        <p id="lb-frame" class="data">Frame 001 of 093</p>
+      </div>
+    </div>
+    <p id="lb-cap"></p>
+    <dl id="lb-exp" class="data">
+      <div><dt>Shutter</dt><dd id="x-ss">--</dd></div>
+      <div><dt>Aperture</dt><dd id="x-f">--</dd></div>
+      <div><dt>ISO</dt><dd id="x-iso">--</dd></div>
+      <div><dt>Focal</dt><dd id="x-mm">--</dd></div>
+    </dl>
+    <p id="lb-gear" class="data"></p>
+    <div class="lb-step">
+      <button id="lb-prev" class="lb-btn" aria-label="Previous photo"><Icon name="left" size={22} /></button>
+      <button id="lb-next" class="lb-btn" aria-label="Next photo"><Icon name="right" size={22} /></button>
+    </div>
+    <a class="btn btn-red lb-hire" href={WA_LINK} target="_blank" rel="noopener"><Icon name="whatsapp" />Hire Inaldo</a>
+  </aside>
+</div>
+
+<style>
+  #lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-lightbox);
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    background: rgba(11, 11, 12, 0.98);
+  }
+  #lightbox[hidden] { display: none; }
+  #lb-stage { position: relative; margin: 0; min-width: 0; min-height: 0; display: grid; place-items: center; padding: 32px; overflow: hidden; touch-action: pan-y; }
+  #lb-img { max-width: 100%; max-height: calc(100dvh - 64px); object-fit: contain; user-select: none; -webkit-user-drag: none; cursor: zoom-in; transform-origin: center; }
+  #lb-img.zoomed { cursor: zoom-out; }
+  #lb-zoom { position: absolute; top: 16px; left: 16px; padding: 6px 10px; background: var(--red); color: var(--on-red); opacity: 0; pointer-events: none; }
+
+  #lb-rail { display: flex; flex-direction: column; gap: 20px; padding: 0 24px 24px; border-left: 1px solid var(--line); background: var(--panel); overflow-y: auto; }
+  #lb-close { align-self: flex-end; margin-right: -24px; flex: none; }
+  .lb-id { margin-top: auto; display: grid; gap: 14px; }
+  #lb-code {
+    justify-self: start;
+    padding: 6px 12px 2px;
+    background: var(--red);
+    color: var(--on-red);
+    font-size: 72px;
+  }
+  #lb-label { font-size: 26px; overflow-wrap: anywhere; }
+  #lb-frame { margin: 8px 0 0; color: var(--fg-2); }
+  #lb-cap { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.35; text-transform: uppercase; color: var(--fg); }
+  #lb-cap:empty { display: none; }
+
+  /* Exposure block: the playback info panel */
+  #lb-exp { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 0; background: var(--line); border: 1px solid var(--line); }
+  #lb-exp div { padding: 10px 12px; background: var(--ink); }
+  #lb-exp dt { font-size: 10px; text-transform: uppercase; color: var(--fg-3); }
+  #lb-exp dd { margin: 2px 0 0; font-size: 18px; color: var(--fg); }
+  #lb-exp.none { display: none; }
+  #lb-gear { margin: -8px 0 0; font-size: 11px; line-height: 1.5; color: var(--fg-2); white-space: pre-line; }
+  #lb-gear:empty { display: none; }
+
+  .lb-step { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); flex: none; }
+  .lb-btn {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    background: var(--panel);
+    border: 0;
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  }
+  .lb-step .lb-btn { width: 100%; }
+  .lb-btn:hover { background: var(--red); color: var(--on-red); }
+  .lb-hire { justify-content: center; flex: none; }
+
+  @media (max-width: 900px) {
+    #lightbox { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    #lb-stage { padding: 56px 0 8px; }
+    #lb-img { max-height: calc(100dvh - 260px); }
+    #lb-rail {
+      display: grid;
+      grid-template-columns: 1fr 112px;
+      gap: 10px 12px;
+      padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      overflow: visible;
+    }
+    #lb-close { position: fixed; top: 0; right: 0; margin: 0; background: rgba(20, 20, 22, 0.9); }
+    .lb-id { margin: 0; grid-template-columns: auto 1fr; align-items: center; gap: 12px; }
+    #lb-code { font-size: 36px; }
+    #lb-label { font-size: 17px; }
+    #lb-frame { margin: 2px 0 0; font-size: 11px; }
+    .lb-step { grid-column: 2; grid-row: 1; align-self: center; }
+    .lb-step .lb-btn { height: 52px; }
+    #lb-cap { grid-column: 1 / -1; font-size: 12px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    #lb-exp { grid-column: 1 / -1; grid-template-columns: repeat(4, 1fr); }
+    #lb-exp div { padding: 6px 8px; }
+    #lb-exp dt { font-size: 9px; }
+    #lb-exp dd { font-size: 14px; }
+    #lb-gear { display: none; }
+    .lb-hire { grid-column: 1 / -1; width: 100%; }
+  }
+</style>
+
+<script>
+  import { animate } from 'animejs';
+
+  type Shot = { cam?: string; lens?: string; mm?: number; ss?: string; f?: number; iso?: number; date?: string };
+  type Item = { src: string; label: string; code: string; n: number; of: number; caption?: string; shot?: Shot | null };
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lb = document.getElementById('lightbox')!;
+  const img = document.getElementById('lb-img') as HTMLImageElement;
+  const zoomTag = document.getElementById('lb-zoom')!;
+  const $ = (id: string) => document.getElementById(id)!;
+  const closeBtn = $('lb-close');
+  const shutter = () => (window as any).shutter as { fire: (cb: () => void, t?: object) => Promise<void> } | undefined;
+
+  let items: Item[] = [];
+  let pos = 0;
+  let opener: HTMLElement | null = null;
+  let busy = false;
+  const pad = (n: number) => String(n).padStart(3, '0');
+
+  function paint(it: Item) {
+    img.src = it.src;
+    img.hidden = false;
+    img.alt = it.caption ? `${it.caption}. Photo by Inaldo Pérez` : `${it.label}, photo by Inaldo Pérez`;
+    $('lb-code').textContent = it.code;
+    $('lb-label').textContent = it.label;
+    $('lb-frame').textContent = `Frame ${pad(it.n)} of ${pad(it.of)}`;
+    $('lb-cap').textContent = it.caption || '';
+    const s = it.shot || {};
+    $('x-ss').textContent = s.ss || '--';
+    $('x-f').textContent = s.f ? `f/${s.f}` : '--';
+    $('x-iso').textContent = s.iso ? String(s.iso) : '--';
+    $('x-mm').textContent = s.mm ? `${s.mm}mm` : '--';
+    $('lb-exp').classList.toggle('none', !s.ss && !s.f && !s.iso && !s.mm);
+    $('lb-gear').textContent = [s.cam, s.lens, s.date].filter(Boolean).join('\n');
+    setZoom(false);
+  }
+
+  async function show(i: number, dir = 0) {
+    if (!items.length || busy) return;
+    busy = true;
+    pos = (i + items.length) % items.length;
+    const it = items[pos];
+    const sh = shutter();
+    if (dir !== 0 && sh && !reduce) await sh.fire(() => paint(it), { close: 110, open: 170 });
+    else paint(it);
+    // Warm the cache for the neighbours.
+    [pos - 1, pos + 1].forEach((k) => { const n = items[(k + items.length) % items.length]; if (n) new Image().src = n.src; });
+    busy = false;
+  }
+
+  async function open(list: Item[], index: number, from: HTMLElement | null) {
+    items = list; opener = from;
+    const reveal = () => {
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
+      pos = (index + items.length) % items.length;
+      paint(items[pos]);
+    };
+    const sh = shutter();
+    if (sh && !reduce) await sh.fire(reveal, { close: 150, open: 230 });
+    else reveal();
+    closeBtn.focus();
+  }
+
+  function close() {
+    const done = () => { lb.hidden = true; document.body.style.overflow = ''; img.removeAttribute('src'); img.hidden = true; opener?.focus({ preventScroll: true }); };
+    if (reduce) return done();
+    animate(lb, { opacity: [1, 0], duration: 180, ease: 'outQuad', onComplete: () => { done(); lb.style.opacity = ''; } });
+  }
+
+  // ===== Magnify, like a playback zoom: double-click / double-tap =====
+  let zoomed = false;
+  function setZoom(on: boolean, x = 0.5, y = 0.5) {
+    zoomed = on;
+    img.classList.toggle('zoomed', on);
+    img.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+    if (reduce) { img.style.transform = on ? 'scale(2)' : ''; zoomTag.style.opacity = on ? '1' : '0'; return; }
+    animate(img, { scale: on ? 2 : 1, duration: 380, ease: 'outExpo' });
+    animate(zoomTag, { opacity: on ? 1 : 0, duration: 200, ease: 'outQuad' });
+  }
+  img.addEventListener('dblclick', (e) => {
+    const r = img.getBoundingClientRect();
+    setZoom(!zoomed, (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+  });
+  let lastTap = 0;
+  img.addEventListener('touchend', (e) => {
+    const now = performance.now();
+    if (now - lastTap < 300) {
+      const t = e.changedTouches[0], r = img.getBoundingClientRect();
+      setZoom(!zoomed, (t.clientX - r.left) / r.width, (t.clientY - r.top) / r.height);
+      lastTap = 0;
+    } else lastTap = now;
+  });
+
+  window.addEventListener('lb:open', (e) => {
+    const { items: list, index, opener: from } = (e as CustomEvent).detail;
+    open(list, index, from || null);
+  });
+  closeBtn.addEventListener('click', close);
+  $('lb-prev').addEventListener('click', () => show(pos - 1, -1));
+  $('lb-next').addEventListener('click', () => show(pos + 1, 1));
+  window.addEventListener('keydown', (e) => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') { zoomed ? setZoom(false) : close(); }
+    if (e.key === 'ArrowLeft') show(pos - 1, -1);
+    if (e.key === 'ArrowRight') show(pos + 1, 1);
+    if (e.key === 'Tab') {
+      // keep focus inside the dialog
+      const f = Array.from(lb.querySelectorAll<HTMLElement>('button, a'));
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  let tx = 0;
+  const stage = $('lb-stage');
+  stage.addEventListener('touchstart', (e) => (tx = e.changedTouches[0].clientX), { passive: true });
+  stage.addEventListener('touchend', (e) => {
+    if (zoomed) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) dx > 0 ? show(pos - 1, -1) : show(pos + 1, 1);
+  }, { passive: true });
+  stage.addEventListener('click', (e) => { if (e.target === stage) close(); });
+</script>

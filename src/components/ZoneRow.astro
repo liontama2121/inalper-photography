@@ -1,0 +1,60 @@
+---
+// One unbroken row of discipline zones. It scrolls sideways, never wraps.
+// Behaviour belongs to the page: buttons carry data-cat ("all" first).
+const { zones, total, id, label = 'Filter by discipline' } = Astro.props;
+---
+
+<div id={id} class="zone-row" role="toolbar" aria-label={label}>
+  <button class="zone active" data-cat="all" aria-pressed="true">
+    <span class="z-code">ALL</span><span class="z-label">Every zone</span><span class="z-n data" data-all-n>{total}</span>
+  </button>
+  {zones.map((z) => (
+    <button class="zone" data-cat={z.cat} aria-pressed="false" title={z.label}>
+      <span class="z-code">{z.code}</span><span class="z-label">{z.label}</span><span class="z-n data">{z.count}</span>
+    </button>
+  ))}
+</div>
+
+<style>
+  .zone-row {
+    display: flex;
+    height: 76px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--ink);
+  }
+  .zone-row::-webkit-scrollbar { display: none; }
+  .zone {
+    flex: 1 0 auto;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    align-content: center;
+    column-gap: 8px;
+    padding: 0 16px;
+    background: none;
+    border: 0;
+    border-right: 1px solid var(--line);
+    text-align: left;
+    cursor: pointer;
+    color: var(--fg-2);
+    transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  }
+  .zone:last-child { border-right: 0; }
+  .z-code { grid-row: span 2; font-weight: 900; font-stretch: 62%; font-size: 34px; line-height: 1; color: var(--fg); transition: font-stretch 0.3s var(--ease-out); }
+  .z-label { font-size: 12px; font-weight: 600; text-transform: uppercase; line-height: 1.2; white-space: nowrap; }
+  .z-n { font-size: 11px; color: var(--fg-3); }
+  .zone:hover { background: var(--panel); }
+  .zone:hover .z-code { font-stretch: 100%; }
+  .zone:focus-visible { outline-offset: -3px; }
+  .zone.active { background: var(--red); color: var(--on-red); }
+  .zone.active .z-code, .zone.active .z-n { color: var(--on-red); }
+
+  @media (max-width: 768px) {
+    .zone-row { height: 64px; }
+    .z-label { display: none; }
+    .z-code { font-size: 28px; }
+  }
+</style>

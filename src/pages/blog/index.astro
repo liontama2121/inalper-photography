@@ -1,30 +1,29 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
 import { posts } from '../../lib/posts.js';
 ---
 
-<Layout title="Blog — Behind the Lens — IPEREZPHOTO" active="blog">
+<Layout title="Blog | Behind the Lens, Inaldo Pérez" active="blog">
   <main id="blog">
-    <div class="page-head reveal-group">
-      <p class="eyebrow reveal">// Blog</p>
-      <h1 class="h-display reveal">BEHIND THE LENS</h1>
-      <p class="sub reveal">Stories, technique and creative process.</p>
-    </div>
+    <header class="wrap page-head reveal-group">
+      <h1 class="bib-type reveal">Behind the lens</h1>
+      <p class="lede reveal">Stories, technique and creative process from the field.</p>
+    </header>
 
     {posts.length === 0 ? (
-      <section class="empty">
-        <p class="empty-tag mono">[ Coming soon ]</p>
-        <p class="empty-sub">The first stories are on their way.</p>
+      <section class="wrap empty reveal-group">
+        <p class="empty-h code-type reveal">No stories filed yet</p>
+        <p class="empty-sub reveal">The first posts are on their way. Meanwhile, the work speaks for itself.</p>
+        <a class="btn btn-line reveal" href="/portfolio">Portfolio <Icon name="arrow" /></a>
       </section>
     ) : (
-      <section class="post-list">
-        {posts.map((p) => (
-          <a class="post-card reveal" href={`/blog/${p.slug}`}>
-            <div class="post-cover">{p.cover && <img src={p.cover} alt={p.title} loading="lazy" />}</div>
-            <div class="post-meta">
-              <span class="mono">{p.category} · {p.date}</span>
-              <h3>{p.title}</h3>
-            </div>
+      <section class="wrap post-list">
+        {posts.map((p, i) => (
+          <a class={`post reveal${i === 0 ? ' lead' : ''}`} href={`/blog/${p.slug}`}>
+            <div class="post-cover">{p.cover && <img src={p.cover} alt="" loading="lazy" />}</div>
+            <p class="post-meta data">{p.category}, {p.date}</p>
+            <h2 class="post-title bib-type">{p.title}</h2>
           </a>
         ))}
       </section>
@@ -33,19 +32,19 @@ import { posts } from '../../lib/posts.js';
 </Layout>
 
 <style>
-  #blog { min-height: 70vh; padding-bottom: 120px; }
-  .sub { font-size: 15px; font-weight: 300; color: var(--muted); margin: 18px 0 0; }
-  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 120px 24px; }
-  .empty-tag { font-size: 10px; letter-spacing: 0.3em; color: var(--border); }
-  .empty-sub { font-size: 14px; font-weight: 300; color: #2a2a2a; margin: 0; }
+  #blog { min-height: 70vh; padding-bottom: clamp(96px, 12vw, 160px); }
+  .empty { padding-top: 24px; padding-bottom: 24px; border-top: 3px solid var(--fg); }
+  .empty-h { margin-top: 32px; font-size: clamp(56px, 10vw, 140px); color: var(--fg-3); }
+  .empty-sub { margin: 20px 0 28px; max-width: 48ch; color: var(--fg-2); font-size: 17px; }
 
-  .post-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1280px; margin: 24px auto 0; padding: 0 40px; }
-  .post-card { display: block; background: var(--deep); border: 1px solid var(--border); transition: border-color 0.3s ease; }
-  .post-card:hover { border-color: var(--accent); }
-  .post-cover { aspect-ratio: 16/9; background: var(--surface); overflow: hidden; }
-  .post-cover img { width: 100%; height: 100%; object-fit: cover; }
-  .post-meta { padding: 24px 28px; }
-  .post-meta span { font-size: 9px; color: var(--accent); letter-spacing: 0.2em; }
-  .post-meta h3 { font-family: var(--font-display); font-size: 28px; font-weight: 400; color: #fff; margin: 10px 0 0; }
-  @media (max-width: 768px) { .post-list { grid-template-columns: 1fr; padding: 0 16px; } }
+  .post-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px 24px; }
+  .post.lead { grid-column: 1 / -1; }
+  .post-cover { aspect-ratio: 16 / 9; background: var(--panel); overflow: hidden; }
+  .post-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out); }
+  .post:hover .post-cover img { transform: scale(1.03); }
+  .post-meta { margin: 16px 0 8px; color: var(--fg-3); }
+  .post-title { font-size: clamp(24px, 2.6vw, 40px); }
+  .post.lead .post-title { font-size: clamp(32px, 4.4vw, 64px); }
+  .post:hover .post-title { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 4px; text-underline-offset: 6px; }
+  @media (max-width: 768px) { .post-list { grid-template-columns: 1fr; } }
 </style>

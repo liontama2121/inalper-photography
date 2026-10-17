@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T00:00:00Z",
+  "title": "Design System: IPEREZPHOTO",
+  "extensions": {
+    "colorMeta": {
+      "canon-red": { "role": "primary", "displayName": "Canon Red", "canonical": "#cc0000", "cssVar": "--red", "tonalRamp": ["oklch(15% 0.06 29)", "oklch(25% 0.10 29)", "oklch(35% 0.14 29)", "oklch(45% 0.18 29)", "oklch(54% 0.22 29)", "oklch(66% 0.18 29)", "oklch(80% 0.10 29)", "oklch(95% 0.03 29)"] },
+      "canon-red-hot": { "role": "primary", "displayName": "Hot Red", "canonical": "#e3120b", "cssVar": "--red-hi", "tonalRamp": ["oklch(15% 0.06 30)", "oklch(25% 0.10 30)", "oklch(35% 0.14 30)", "oklch(45% 0.18 30)", "oklch(58% 0.23 30)", "oklch(68% 0.18 30)", "oklch(82% 0.10 30)", "oklch(95% 0.03 30)"] },
+      "on-red": { "role": "primary", "displayName": "On Red", "canonical": "#ffffff", "cssVar": "--on-red", "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(63% 0 0)", "oklch(75% 0 0)", "oklch(87% 0 0)", "oklch(100% 0 0)"] },
+      "on-red-soft": { "role": "primary", "displayName": "On Red Soft", "canonical": "#ffe5e3", "note": "Literal in contact.astro and index.astro; not yet a :root custom property.", "tonalRamp": ["oklch(15% 0.03 25)", "oklch(27% 0.03 25)", "oklch(39% 0.03 25)", "oklch(51% 0.03 25)", "oklch(63% 0.03 25)", "oklch(75% 0.03 25)", "oklch(87% 0.03 25)", "oklch(94% 0.03 25)"] },
+      "canon-black": { "role": "neutral", "displayName": "Canon Black", "canonical": "#0b0b0c", "cssVar": "--ink", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] },
+      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#141416", "cssVar": "--panel", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] },
+      "panel-raised": { "role": "neutral", "displayName": "Panel Raised", "canonical": "#1c1c1f", "cssVar": "--panel-2", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] },
+      "rule-line": { "role": "neutral", "displayName": "Rule Line", "canonical": "#2a2a2e", "cssVar": "--line", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] },
+      "paper-white": { "role": "neutral", "displayName": "Paper White", "canonical": "#f4f4f2", "cssVar": "--fg", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] },
+      "ash": { "role": "neutral", "displayName": "Ash", "canonical": "#b4b4b8", "cssVar": "--fg-2", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] },
+      "smoke": { "role": "neutral", "displayName": "Smoke", "canonical": "#8c8c92", "cssVar": "--fg-3", "tonalRamp": ["#0b0b0c", "#141416", "#1c1c1f", "#2a2a2e", "#55555b", "#8c8c92", "#b4b4b8", "#f4f4f2"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Bib Lettering", "purpose": "Wide-black uppercase (.bib-type): page H1s, bib name, PHOTO band, drawer links, closing headline.", "fontStretch": "125%", "textTransform": "uppercase" },
+      "headline": { "displayName": "Zone Code", "purpose": "Condensed-black uppercase (.code-type): section headings and every zone code.", "fontStretch": "62%", "textTransform": "uppercase" },
+      "title": { "displayName": "Title", "purpose": "Wide-black at title size: access-row titles, coverage events, post titles.", "fontStretch": "125%", "textTransform": "uppercase" },
+      "body": { "displayName": "Body", "purpose": "Default copy; long reading steps to 17-19px at 1.7-1.8, max 62-68ch." },
+      "lede": { "displayName": "Lede", "purpose": "One line under page heads, Ash, max 52ch." },
+      "label": { "displayName": "Label", "purpose": "Buttons, nav, text links, contact tags.", "fontStretch": "112%", "textTransform": "uppercase" },
+      "data": { "displayName": "Data", "purpose": "Martian Mono for real counts, frame numbers and codes only (.data)." }
+    },
+    "shadows": [
+      { "name": "bib-lift", "value": "0 24px 60px rgba(0, 0, 0, 0.55)", "purpose": "Home bib over the photo wall (phone: 0 -16px 40px rgba(0,0,0,0.5))." },
+      { "name": "credential-lift", "value": "0 30px 80px rgba(0, 0, 0, 0.5)", "purpose": "Issued credential card on About." },
+      { "name": "float", "value": "0 10px 30px rgba(0, 0, 0, 0.45)", "purpose": "Floating WhatsApp hire button." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "House ease for CSS state transitions (--ease-out); anime.js uses outExpo." },
+      { "name": "state", "value": "0.2s", "purpose": "Hover colour changes on buttons, zones, links." },
+      { "name": "reveal", "value": "translateY 32px to 0, opacity 0 to 1, 900ms outExpo, stagger 70ms", "purpose": "Global scroll reveal (anime.js)." },
+      { "name": "burst", "value": "85ms ring steps, scale 1.12 to 1, 260ms outExpo", "purpose": "Home wall fill from the focus point outward." },
+      { "name": "af-lock", "value": "scale 1.5 to 1 over 380ms, then two blinks over 420ms", "purpose": "AF bracket locks on the first frame." },
+      { "name": "pan", "value": "900ms outExpo", "purpose": "Wall glide to a zone or focused cell." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "400px" },
+      { "name": "sm", "value": "480px" },
+      { "name": "md", "value": "768px" },
+      { "name": "md-plus", "value": "860px" },
+      { "name": "lg", "value": "900px" },
+      { "name": "xl", "value": "1200px" }
+    ],
+    "zIndex": [
+      { "name": "wall-ui", "value": 10 },
+      { "name": "nav", "value": 100 },
+      { "name": "float", "value": 200 },
+      { "name": "drawer", "value": 300 },
+      { "name": "lightbox", "value": 400 }
+    ]
+  },
+  "components": [
+    {
+      "name": "Red Button",
+      "kind": "button",
+      "refersTo": "button-red",
+      "description": "Primary hire action; always carries the WhatsApp icon.",
+      "html": "<a class=\"ds-btn ds-btn-red\" href=\"#\"><svg viewBox=\"0 0 256 256\" width=\"18\" height=\"18\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M128 24a104 104 0 0 0-91.2 154l-11.1 38.9a8 8 0 0 0 9.4 9.4L74 215.2A104 104 0 1 0 128 24Zm52.4 137.6c-4.4 12.4-21.6 20.1-33.6 20.1-26.7 0-74.6-37.8-74.6-74.6 0-12 7.7-29.2 20.1-33.6a8 8 0 0 1 9.7 3.4l11 18.4a8 8 0 0 1-.6 9l-7.4 9.5a44 44 0 0 0 32.7 32.7l9.5-7.4a8 8 0 0 1 9-.6l18.4 11a8 8 0 0 1 3.4 9.7Z\"/></svg>Hire Inaldo</a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 0; font-family: 'Archivo', system-ui, sans-serif; font-size: 15px; font-weight: 700; font-stretch: 112%; letter-spacing: 0.01em; text-transform: uppercase; white-space: nowrap; text-decoration: none; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.12s cubic-bezier(0.16,1,0.3,1); } .ds-btn-red { background: var(--red, #cc0000); color: var(--on-red, #fff); } .ds-btn-red:hover { background: var(--red-hi, #e3120b); } .ds-btn:active { transform: translateY(1px) scale(0.98); } .ds-btn:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Secondary action (Portfolio, Load more).",
+      "html": "<a class=\"ds-btn-line\" href=\"#\">Portfolio</a>",
+      "css": ".ds-btn-line { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 0; border-radius: 0; background: transparent; color: var(--fg, #f4f4f2); box-shadow: inset 0 0 0 1px var(--fg-3, #8c8c92); font-family: 'Archivo', system-ui, sans-serif; font-size: 15px; font-weight: 700; font-stretch: 112%; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s; } .ds-btn-line:hover { box-shadow: inset 0 0 0 1px var(--fg, #f4f4f2); background: rgba(244,244,242,0.06); } .ds-btn-line:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Ink Button",
+      "kind": "button",
+      "refersTo": "button-ink",
+      "description": "Black button used only on a red section.",
+      "html": "<div style=\"background:#cc0000;padding:24px\"><a class=\"ds-btn-ink\" href=\"#\">Hire Inaldo</a></div>",
+      "css": ".ds-btn-ink { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 0; background: var(--ink, #0b0b0c); color: var(--fg, #f4f4f2); font-family: 'Archivo', system-ui, sans-serif; font-size: 15px; font-weight: 700; font-stretch: 112%; text-transform: uppercase; text-decoration: none; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-btn-ink:hover { background: var(--panel-2, #1c1c1f); } .ds-btn-ink:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Zone Row",
+      "kind": "chip",
+      "refersTo": "zone",
+      "description": "Signature unbroken row of discipline zones; filters and pans. Never wraps.",
+      "html": "<div class=\"ds-zone-row\" role=\"toolbar\"><button class=\"ds-zone ds-active\" aria-pressed=\"true\"><span class=\"ds-z-code\">ALL</span><span class=\"ds-z-label\">Every zone</span><span class=\"ds-z-n\">559</span></button><button class=\"ds-zone\" aria-pressed=\"false\"><span class=\"ds-z-code\">RUG</span><span class=\"ds-z-label\">Rugby</span><span class=\"ds-z-n\">22</span></button><button class=\"ds-zone\" aria-pressed=\"false\"><span class=\"ds-z-code\">SWM</span><span class=\"ds-z-label\">Swimming</span><span class=\"ds-z-n\">93</span></button></div>",
+      "css": ".ds-zone-row { display: flex; height: 76px; overflow-x: auto; scrollbar-width: none; background: var(--ink, #0b0b0c); border-top: 1px solid var(--line, #2a2a2e); border-bottom: 1px solid var(--line, #2a2a2e); } .ds-zone { flex: 1 0 auto; display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; align-content: center; column-gap: 8px; padding: 0 16px; background: none; border: 0; border-right: 1px solid var(--line, #2a2a2e); border-radius: 0; text-align: left; cursor: pointer; color: var(--fg-2, #b4b4b8); font-family: 'Archivo', system-ui, sans-serif; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s; } .ds-z-code { grid-row: span 2; font-weight: 900; font-stretch: 62%; font-size: 34px; line-height: 1; color: var(--fg, #f4f4f2); transition: font-stretch 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-z-label { font-size: 12px; font-weight: 600; text-transform: uppercase; line-height: 1.2; white-space: nowrap; } .ds-z-n { font-family: 'Martian Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--fg-3, #8c8c92); } .ds-zone:hover { background: var(--panel, #141416); } .ds-zone:hover .ds-z-code { font-stretch: 100%; } .ds-zone:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: -3px; } .ds-zone.ds-active { background: var(--red, #cc0000); color: var(--on-red, #fff); } .ds-zone.ds-active .ds-z-code, .ds-zone.ds-active .ds-z-n { color: var(--on-red, #fff); }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Fixed 64px black bar; red underline on current; full-height red hire button.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-logo\">IPEREZPHOTO</span><a class=\"ds-nav-link ds-current\" href=\"#\">Portfolio</a><a class=\"ds-nav-link\" href=\"#\">About</a><a class=\"ds-nav-link\" href=\"#\">Contact</a><a class=\"ds-nav-hire\" href=\"#\">Hire Inaldo</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 28px; height: 64px; padding-left: 24px; background: var(--ink, #0b0b0c); border-bottom: 1px solid var(--line, #2a2a2e); font-family: 'Archivo', system-ui, sans-serif; } .ds-nav-logo { margin-right: auto; font-weight: 900; font-stretch: 125%; letter-spacing: 0.1em; color: var(--fg, #f4f4f2); font-size: 14px; } .ds-nav-link { position: relative; padding: 6px 0; font-size: 14px; font-weight: 600; font-stretch: 112%; text-transform: uppercase; color: var(--fg-2, #b4b4b8); text-decoration: none; transition: color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover, .ds-nav-link.ds-current { color: var(--fg, #f4f4f2); } .ds-nav-link.ds-current::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--red, #cc0000); } .ds-nav-link:focus-visible, .ds-nav-hire:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: 3px; } .ds-nav-hire { display: inline-flex; align-items: center; height: 64px; padding: 0 28px; background: var(--red, #cc0000); color: var(--on-red, #fff); font-size: 15px; font-weight: 700; font-stretch: 112%; text-transform: uppercase; text-decoration: none; transition: background-color 0.2s; } .ds-nav-hire:hover { background: var(--red-hi, #e3120b); }"
+    },
+    {
+      "name": "Bib",
+      "kind": "card",
+      "refersTo": "bib",
+      "description": "Home identity block: red PHOTO band, wide-black name, credit, red + line actions.",
+      "html": "<div class=\"ds-bib\"><p class=\"ds-bib-band\">Photo</p><div class=\"ds-bib-body\"><h1 class=\"ds-bib-name\">Inaldo<br>Pérez</h1><p class=\"ds-bib-sub\">Sports photographer in Bogotá. Published by AFP, El Tiempo, Caracol TV, RCN and El Heraldo.</p><a class=\"ds-bib-btn\" href=\"#\">Hire Inaldo</a></div></div>",
+      "css": ".ds-bib { width: min(540px, 100%); background: var(--ink, #0b0b0c); color: var(--fg, #f4f4f2); box-shadow: 0 24px 60px rgba(0,0,0,0.55); font-family: 'Archivo', system-ui, sans-serif; } .ds-bib-band, .ds-bib-name { margin: 0; font-weight: 900; font-stretch: 125%; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; } .ds-bib-band { padding: 14px 24px 8px; background: var(--red, #cc0000); color: var(--on-red, #fff); font-size: 56px; letter-spacing: 0.04em; } .ds-bib-body { padding: 24px 24px 26px; } .ds-bib-name { font-size: 60px; } .ds-bib-sub { margin: 16px 0 22px; max-width: 40ch; color: var(--fg-2, #b4b4b8); font-size: 16px; line-height: 1.55; } .ds-bib-btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; background: var(--red, #cc0000); color: var(--on-red, #fff); font-size: 15px; font-weight: 700; font-stretch: 112%; text-transform: uppercase; text-decoration: none; transition: background-color 0.2s; } .ds-bib-btn:hover { background: var(--red-hi, #e3120b); } .ds-bib-btn:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: 3px; }"
+    },
+    {
+      "name": "Access Row",
+      "kind": "custom",
+      "refersTo": "zone-code-chip",
+      "description": "Accreditation row: red zone-code chip, wide-black title, Ash description, 1px rule.",
+      "html": "<ol class=\"ds-access\"><li class=\"ds-access-row\"><span class=\"ds-a-code\">WGC</span><h3 class=\"ds-a-title\">World Games Cali 2013</h3><p class=\"ds-a-desc\">Multi-sport coverage across the full programme.</p></li></ol>",
+      "css": ".ds-access { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--fg, #f4f4f2); font-family: 'Archivo', system-ui, sans-serif; } .ds-access-row { display: grid; grid-template-columns: minmax(120px, 0.7fr) 2fr 1.6fr; gap: 24px; align-items: center; padding: 28px 0; border-bottom: 1px solid var(--line, #2a2a2e); } .ds-a-code { justify-self: start; padding: 8px 12px 2px; background: var(--red, #cc0000); color: var(--on-red, #fff); font-weight: 900; font-stretch: 62%; font-size: 48px; line-height: 0.88; text-transform: uppercase; } .ds-a-title { margin: 0; font-weight: 900; font-stretch: 125%; font-size: 28px; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; color: var(--fg, #f4f4f2); } .ds-a-desc { margin: 0; color: var(--fg-2, #b4b4b8); max-width: 46ch; }"
+    },
+    {
+      "name": "Contact Channel",
+      "kind": "card",
+      "refersTo": "channel-primary",
+      "description": "Full-width channel rows; WhatsApp primary as a red field, others on Panel.",
+      "html": "<a class=\"ds-ch ds-primary\" href=\"#\"><span class=\"ds-ch-tag\">WhatsApp<span class=\"ds-ch-note\">Fastest reply</span></span><span class=\"ds-ch-val\">+57 300 000 0000</span></a><a class=\"ds-ch\" href=\"#\"><span class=\"ds-ch-tag\">Email<span class=\"ds-ch-note\">For briefs</span></span><span class=\"ds-ch-val\">hello@example.com</span></a>",
+      "css": ".ds-ch { display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: 24px; margin-bottom: 4px; padding: 32px 28px; background: var(--panel, #141416); color: var(--fg, #f4f4f2); text-decoration: none; font-family: 'Archivo', system-ui, sans-serif; transition: background-color 0.25s cubic-bezier(0.16,1,0.3,1); } .ds-ch:hover { background: var(--panel-2, #1c1c1f); } .ds-ch.ds-primary { background: var(--red, #cc0000); color: var(--on-red, #fff); padding-top: 48px; padding-bottom: 48px; } .ds-ch.ds-primary:hover { background: var(--red-hi, #e3120b); } .ds-ch:focus-visible { outline: 2px solid var(--fg, #f4f4f2); outline-offset: 3px; } .ds-ch-tag { display: grid; gap: 4px; font-weight: 800; font-stretch: 112%; text-transform: uppercase; font-size: 18px; } .ds-ch-note { font-weight: 500; font-stretch: 100%; text-transform: none; font-size: 14px; color: var(--fg-2, #b4b4b8); } .ds-ch.ds-primary .ds-ch-note { color: #ffe5e3; } .ds-ch-val { font-weight: 900; font-stretch: 62%; font-size: 48px; line-height: 1; overflow-wrap: anywhere; } .ds-ch:not(.ds-primary) .ds-ch-val { font-stretch: 75%; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pitchside Accreditation",
+    "overview": "The site is the photographer's press credential and bib, not a gallery template. Everything is issued, coded and stamped: each discipline carries a three-letter zone code, accreditations read as access rows, the About page is an issued credential card, and the home opens on one draggable wall of every frame with a red bib block pinned bottom-left. The ground is Canon black because photographs are judged on black; there is one dark theme on purpose and no light mode.\n\nRed is never a thin accent. It arrives as a solid field (the bib's PHOTO band, an active zone, the primary contact channel, the full-width closing section) and always carries white lettering. Type does the rest: one variable family, Archivo, swung across its width axis so wide-black lettering (125) names people and moments while condensed-black lettering (62) carries zone codes and towering section headings. Martian Mono appears only where the content is genuinely data: counts, frame numbers, zone codes on file.\n\nDensity is high where the photos are (4px seams on the wall and gallery) and generous everywhere else (section rhythm of 96 to 160px). Motion is anime.js only, quick and decisive: an exponential ease-out, a burst-fill of frames from the focus point outward, an AF bracket that locks and blinks twice.",
+    "keyCharacteristics": [
+      "Canon black ground, Canon red as solid fields carrying white type",
+      "Every corner square, enforced globally",
+      "One variable family swinging between wide (125) and condensed (62) at weight 900",
+      "Mono reserved for real data",
+      "Photographs packed on 4px seams; chrome separated by 1px rules",
+      "Credential grammar: zone codes, access rows, issued cards, bib blocks"
+    ],
+    "rules": [
+      { "name": "The Bib Field Rule", "body": "Red is a filled block carrying white type, never a hairline, glow or tint. The only sub-field uses of red are the 3px active-nav underline, the 3px red AF corner brackets and red underline decoration on text links.", "section": "colors" },
+      { "name": "The Judged-On-Black Rule", "body": "One dark theme. Do not add a light mode or light page sections; the single light surface is the issued credential card on About, which is an object, not a section.", "section": "colors" },
+      { "name": "The Width-Is-Intensity Rule", "body": "Choose width by role: wide (125) for who and what, condensed (62) for codes and section mass. Zone codes widen from 62 to 100 on hover. Do not introduce a second display family.", "section": "typography" },
+      { "name": "The Real-Data Rule", "body": "Martian Mono only for values that are actually counted or numbered. Never for decorative labels or eyebrows.", "section": "typography" },
+      { "name": "The Only-Over-Photos Rule", "body": "A shadow is allowed only on an object that sits over imagery or is a held object (bib, credential card, floating hire button). Panels, rows and buttons stay flat.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do put red down as a solid field with white type: buttons, bands, active zones, chips, the closing section.",
+      "Do keep every corner at 0px and separate chrome with 1px Rule Line dividers.",
+      "Do give each discipline its three-letter zone code and set it condensed-black (wdth 62, 900).",
+      "Do set names and moments wide-black (wdth 125, 900, uppercase, 0.92 line-height).",
+      "Do pack photographs on 4px seams over Panel placeholders.",
+      "Do keep a red \"Hire Inaldo\" WhatsApp action reachable on every page.",
+      "Do animate entrances with anime.js and an exponential ease-out, and honour reduced motion."
+    ],
+    "donts": [
+      "Don't use red as a thin accent, outline, glow or tint behind text.",
+      "Don't round corners or add pill shapes.",
+      "Don't add a light theme or light page sections.",
+      "Don't set Martian Mono on anything that is not a real count, number or code.",
+      "Don't add a second display typeface; vary Archivo's width instead.",
+      "Don't add shadows to flat panels, rows or buttons, or use hard offset shadows.",
+      "Don't wrap the zone row onto a second line."
+    ]
+  }
+}
