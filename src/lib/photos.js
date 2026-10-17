@@ -7,7 +7,7 @@ import path from 'node:path';
 // Pretty label, three-letter zone code (credential grammar) and order.
 export const ZONES = {
   rugby: { label: 'Rugby', code: 'RUG' },
-  atletismo: { label: 'Athletics', code: 'ATH' },
+  atletismo: { label: 'Track and Field', code: 'TNF' },
   natacion: { label: 'Swimming', code: 'SWM' },
   taekwondo: { label: 'Taekwondo', code: 'TKD' },
   gimnasia: { label: 'Gymnastics', code: 'GYM' },
